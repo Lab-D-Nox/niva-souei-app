@@ -335,6 +335,13 @@ export async function getCommentsByWorkId(workId: number) {
   return result;
 }
 
+export async function getCommentById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(comments).where(eq(comments.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function deleteComment(id: number, workId: number) {
   const db = await getDb();
   if (!db) return;

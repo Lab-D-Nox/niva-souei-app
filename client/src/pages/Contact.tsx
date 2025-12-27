@@ -137,8 +137,9 @@ export default function Contact() {
   };
 
   const applyGeneratedSheet = () => {
-    setMessage((prev) => (prev ? prev + "\n\n" : "") + generatedSheet);
-    toast.success("メッセージ欄に追加しました");
+    // generatedSheet is already bound to the hearing sheet textarea
+    // This function just shows a confirmation toast
+    toast.success("ヒアリングシート欄に反映しました");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -277,8 +278,8 @@ export default function Contact() {
                       <Copy className="h-4 w-4 mr-2" />
                       コピー
                     </Button>
-                    <Button variant="outline" size="sm" onClick={applyGeneratedSheet}>
-                      メッセージに追加
+                    <Button variant="default" size="sm" onClick={applyGeneratedSheet}>
+                      フォームに反映
                     </Button>
                   </div>
                 </div>
@@ -405,6 +406,24 @@ export default function Contact() {
                     rows={6}
                     required
                   />
+                </div>
+
+                {/* Hearing Sheet Section */}
+                <div>
+                  <Label htmlFor="hearingSheet" className="mb-2 block">
+                    ヒアリングシート
+                  </Label>
+                  <Textarea
+                    id="hearingSheet"
+                    value={generatedSheet}
+                    onChange={(e) => setGeneratedSheet(e.target.value)}
+                    placeholder="左側の簡易ヒアリングシートで生成した内容がここに表示されます"
+                    rows={4}
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    左側の「ヒアリングシートを生成」ボタンで作成し、「フォームに反映」ボタンでここに貼り付けできます
+                  </p>
                 </div>
 
                 <Button type="submit" disabled={isSubmitting} className="w-full">

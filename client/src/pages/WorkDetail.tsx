@@ -15,6 +15,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -34,6 +45,7 @@ import {
   ArrowLeft,
   Send,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -69,15 +81,18 @@ export default function WorkDetail() {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+  const [localLikeCount, setLocalLikeCount] = useState<number | null>(null);
+  const [localLiked, setLocalLiked] = useState<boolean | null>(null);
 
   const fingerprint = getFingerprint();
+  const utils = trpc.useUtils();
 
-  const { data: work, isLoading, error } = trpc.works.getById.useQuery(
+  const { data: work, isLoading, error, refetch: refetchWork } = trpc.works.getById.useQuery(
     { id: workId },
     { enabled: workId > 0 }
   );
 
-  const { data: likeStatus } = trpc.likes.check.useQuery(
+  const { data: likeStatus, refetch: refetchLikeStatus } = trpc.likes.check.useQuery(
     { workId, fingerprint },
     { enabled: workId > 0 }
   );
@@ -87,11 +102,42 @@ export default function WorkDetail() {
     { enabled: workId > 0 }
   );
 
+  // Initialize local state when work data loads
+  useEffect(() => {
+    if (work) {
+      setLocalLikeCount(work.likeCount);
+    }
+  }, [work]);
+
+  useEffect(() => {
+    if (likeStatus !== undefined) {
+      setLocalLiked(likeStatus.liked);
+    }
+  }, [likeStatus]);
+
   const likeMutation = trpc.likes.toggle.useMutation({
+    onMutate: async () => {
+      // Optimistic update
+      const wasLiked = localLiked;
+      const prevCount = localLikeCount ?? 0;
+      
+      setLocalLiked(!wasLiked);
+      setLocalLikeCount(wasLiked ? Math.max(0, prevCount - 1) : prevCount + 1);
+      
+      return { wasLiked, prevCount };
+    },
     onSuccess: (data) => {
       toast.success(data.liked ? "いいねしました" : "いいねを取り消しました");
+      // Refetch to get accurate counts from server
+      refetchWork();
+      refetchLikeStatus();
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context) {
+        setLocalLiked(context.wasLiked);
+        setLocalLikeCount(context.prevCount);
+      }
       toast.error("エラーが発生しました");
     },
   });
@@ -100,6 +146,7 @@ export default function WorkDetail() {
     onSuccess: () => {
       setCommentText("");
       refetchComments();
+      refetchWork();
       toast.success("コメントを投稿しました");
     },
     onError: (err) => {
@@ -107,7 +154,19 @@ export default function WorkDetail() {
     },
   });
 
+  const deleteCommentMutation = trpc.comments.delete.useMutation({
+    onSuccess: () => {
+      refetchComments();
+      refetchWork();
+      toast.success("コメントを削除しました");
+    },
+    onError: (err) => {
+      toast.error(err.message || "コメントの削除に失敗しました");
+    },
+  });
+
   const handleLike = () => {
+    if (likeMutation.isPending) return;
     likeMutation.mutate({ workId, fingerprint: isAuthenticated ? undefined : fingerprint });
   };
 
@@ -119,6 +178,10 @@ export default function WorkDetail() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    await deleteCommentMutation.mutateAsync({ id: commentId, workId });
   };
 
   const handleShare = async () => {
@@ -141,6 +204,10 @@ export default function WorkDetail() {
       toast.success("プロンプトをコピーしました");
     }
   };
+
+  // Determine displayed values (use local state for optimistic updates)
+  const displayedLikeCount = localLikeCount ?? work?.likeCount ?? 0;
+  const displayedLiked = localLiked ?? likeStatus?.liked ?? false;
 
   if (isLoading) {
     return (
@@ -309,7 +376,7 @@ export default function WorkDetail() {
                   </span>
                   <span className="flex items-center gap-1">
                     <Heart className="h-4 w-4" />
-                    {work.likeCount} likes
+                    {displayedLikeCount} likes
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageCircle className="h-4 w-4" />
@@ -324,12 +391,12 @@ export default function WorkDetail() {
               {/* Actions */}
               <div className="flex flex-wrap gap-3 mb-8">
                 <Button
-                  variant={likeStatus?.liked ? "default" : "outline"}
+                  variant={displayedLiked ? "default" : "outline"}
                   onClick={handleLike}
                   disabled={likeMutation.isPending}
                 >
-                  <Heart className={cn("h-4 w-4 mr-2", likeStatus?.liked && "fill-current")} />
-                  {likeStatus?.liked ? "いいね済み" : "いいね"}
+                  <Heart className={cn("h-4 w-4 mr-2", displayedLiked && "fill-current")} />
+                  {displayedLiked ? "いいね済み" : "いいね"}
                 </Button>
                 <Button variant="outline" onClick={handleShare}>
                   <Share2 className="h-4 w-4 mr-2" />
@@ -451,13 +518,42 @@ export default function WorkDetail() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">
-                            {comment.userName || "Anonymous"}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {format(new Date(comment.createdAt), "yyyy/M/d HH:mm")}
-                          </span>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">
+                              {comment.userName || "Anonymous"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {format(new Date(comment.createdAt), "yyyy/M/d HH:mm")}
+                            </span>
+                          </div>
+                          {/* Delete button for comment owner or admin */}
+                          {user && (user.id === comment.userId || user.role === 'admin') && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>コメントを削除しますか？</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    この操作は取り消せません。コメントは完全に削除されます。
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteComment(comment.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    削除
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
                         </div>
                         <p className="text-sm">{comment.body}</p>
                       </div>

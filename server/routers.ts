@@ -365,10 +365,17 @@ export const appRouter = router({
     delete: protectedProcedure
       .input(z.object({ id: z.number(), workId: z.number() }))
       .mutation(async ({ ctx, input }) => {
-        // Only admin can delete comments
-        if (ctx.user.role !== 'admin') {
-          throw new TRPCError({ code: 'FORBIDDEN' });
+        // Get the comment to check ownership
+        const comment = await db.getCommentById(input.id);
+        if (!comment) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Comment not found' });
         }
+        
+        // Allow deletion if user is the comment author or admin
+        if (comment.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'You can only delete your own comments' });
+        }
+        
         await db.deleteComment(input.id, input.workId);
         return { success: true };
       }),
