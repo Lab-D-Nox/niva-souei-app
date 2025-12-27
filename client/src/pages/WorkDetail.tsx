@@ -46,6 +46,7 @@ import {
   Send,
   Loader2,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -182,6 +183,20 @@ export default function WorkDetail() {
 
   const handleDeleteComment = async (commentId: number) => {
     await deleteCommentMutation.mutateAsync({ id: commentId, workId });
+  };
+
+  const deleteWorkMutation = trpc.works.delete.useMutation({
+    onSuccess: () => {
+      toast.success("作品を削除しました");
+      window.location.href = "/works";
+    },
+    onError: (err) => {
+      toast.error(err.message || "削除に失敗しました");
+    },
+  });
+
+  const handleDeleteWork = async () => {
+    await deleteWorkMutation.mutateAsync({ id: workId });
   };
 
   const handleShare = async () => {
@@ -402,6 +417,43 @@ export default function WorkDetail() {
                   <Share2 className="h-4 w-4 mr-2" />
                   シェア
                 </Button>
+                
+                {/* Edit/Delete buttons for owner */}
+                {user && work.owner && (user.id === work.owner.id || user.role === 'admin') && (
+                  <>
+                    <Button variant="outline" asChild>
+                      <Link href={`/works/${workId}/edit`}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        編集
+                      </Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" className="text-destructive hover:text-destructive">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          削除
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>作品を削除しますか？</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            この操作は取り消せません。作品とそれに関連するすべてのデータ（いいね、コメント）が完全に削除されます。
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeleteWork}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            削除する
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                )}
               </div>
 
               {/* Prompt Section */}

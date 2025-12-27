@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Works from "./pages/Works";
 import WorkDetail from "./pages/WorkDetail";
 import WorkNew from "./pages/WorkNew";
+import WorkEdit from "./pages/WorkEdit";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 import Links from "./pages/Links";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/works" component={Works} />
       <Route path="/works/new" component={WorkNew} />
       <Route path="/works/:id" component={WorkDetail} />
+      <Route path="/works/:id/edit" component={WorkEdit} />
       <Route path="/profile" component={Profile} />
       <Route path="/profile/likes" component={Profile} />
       <Route path="/contact" component={Contact} />
