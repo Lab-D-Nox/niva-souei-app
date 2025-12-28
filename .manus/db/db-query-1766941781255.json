@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE tools SET name = 'Krea', description = 'AIによるリアルタイム画像・動画生成。クリエイティブな表現に最適。', url = 'https://krea.ai' WHERE name = 'Runway Gen-2';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute UPDATE tools SET name = 'Krea', description = 'AIによるリアルタイム画像・動画生成。クリエイティブな表現に最適。', url = 'https://krea.ai' WHERE name = 'Runway Gen-2';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1534
+}
