@@ -6,20 +6,25 @@ import { ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 const categoryLabels: Record<string, string> = {
+  text: "テキスト",
   image: "画像生成",
   video: "動画生成",
   audio: "音声・音楽",
-  text: "テキスト",
   editing: "編集・加工",
+  coding: "コーディング",
   other: "その他",
 };
 
+// カテゴリの表示順序
+const categoryOrder = ["text", "image", "video", "audio", "editing", "coding", "other"];
+
 const categoryColors: Record<string, string> = {
+  text: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
   image: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
   video: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
   audio: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  text: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
   editing: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300",
+  coding: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   other: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
 };
 
@@ -62,66 +67,71 @@ export default function Tools() {
             </div>
           ) : (
             <div className="space-y-12">
-              {Object.entries(groupedTools || {}).map(([category, categoryTools]) => (
-                <div key={category}>
-                  <h2 className="text-xl font-medium mb-6 flex items-center gap-2">
-                    <Badge className={categoryColors[category]}>
-                      {categoryLabels[category] || category}
-                    </Badge>
-                  </h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {(categoryTools as any[]).map((tool: any) => (
-                      <div
-                        key={tool.id}
-                        className="group bg-card rounded-xl p-6 border border-border/50 hover-lift"
-                      >
-                        <div className="flex items-start gap-4 mb-4">
-                          {tool.iconUrl ? (
-                            <img
-                              src={tool.iconUrl}
-                              alt={tool.name}
-                              className="w-12 h-12 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
-                              <span className="text-lg font-bold text-muted-foreground">
-                                {tool.name.charAt(0)}
-                              </span>
+              {categoryOrder
+                .filter(cat => groupedTools?.[cat])
+                .map((category) => {
+                  const categoryTools = groupedTools?.[category] || [];
+                  return (
+                    <div key={category}>
+                      <h2 className="text-xl font-medium mb-6 flex items-center gap-2">
+                        <Badge className={categoryColors[category]}>
+                          {categoryLabels[category] || category}
+                        </Badge>
+                      </h2>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {categoryTools.map((tool: any) => (
+                          <div
+                            key={tool.id}
+                            className="group bg-card rounded-xl p-6 border border-border/50 hover-lift"
+                          >
+                            <div className="flex items-start gap-4 mb-4">
+                              {tool.iconUrl ? (
+                                <img
+                                  src={tool.iconUrl}
+                                  alt={tool.name}
+                                  className="w-12 h-12 rounded-lg object-cover"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
+                                  <span className="text-lg font-bold text-muted-foreground">
+                                    {tool.name.charAt(0)}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <h3 className="font-medium text-lg">{tool.name}</h3>
+                                {tool.url && (
+                                  <a
+                                    href={tool.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                                  >
+                                    公式サイト
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                )}
+                              </div>
                             </div>
-                          )}
-                          <div className="flex-1">
-                            <h3 className="font-medium text-lg">{tool.name}</h3>
-                            {tool.url && (
-                              <a
-                                href={tool.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
-                              >
-                                公式サイト
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
+                            
+                            {tool.description && (
+                              <p className="text-sm text-muted-foreground mb-4">
+                                {tool.description}
+                              </p>
                             )}
-                          </div>
-                        </div>
-                        
-                        {tool.description && (
-                          <p className="text-sm text-muted-foreground mb-4">
-                            {tool.description}
-                          </p>
-                        )}
 
-                        <Link href={`/works?tool=${tool.id}`}>
-                          <Button variant="outline" size="sm" className="w-full">
-                            このツールを使った作品を見る
-                          </Button>
-                        </Link>
+                            <Link href={`/works?tool=${tool.id}`}>
+                              <Button variant="outline" size="sm" className="w-full">
+                                このツールを使った作品を見る
+                              </Button>
+                            </Link>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                    </div>
+                  );
+                })}
             </div>
           )}
 
