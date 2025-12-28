@@ -24,7 +24,7 @@ const services = [
       "使用プロンプト（希望時）",
     ],
     timeline: "3〜7日",
-    priceRange: "¥10,000〜",
+    priceRange: "¥100,000〜",
   },
   {
     id: "standard",
@@ -47,7 +47,7 @@ const services = [
       "リビジョン2回まで込み",
     ],
     timeline: "2〜4週間",
-    priceRange: "¥50,000〜",
+    priceRange: "¥200,000〜",
   },
   {
     id: "grand",
@@ -71,7 +71,7 @@ const services = [
       "プロジェクトドキュメント",
     ],
     timeline: "1〜3ヶ月",
-    priceRange: "¥200,000〜",
+    priceRange: "¥1,000,000〜",
   },
 ];
 
