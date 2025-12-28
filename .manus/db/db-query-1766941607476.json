@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE tools SET category = 'video' WHERE name = 'Runway';\nINSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Grok Video', 'xAIの動画生成機能。リアルタイム情報を活用した動画生成。', 'https://grok.x.ai', 'video', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute UPDATE tools SET category = 'video' WHERE name = 'Runway';\nINSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Grok Video', 'xAIの動画生成機能。リアルタイム情報を活用した動画生成。', 'https://grok.x.ai', 'video', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1728
+}

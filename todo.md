@@ -126,3 +126,6 @@
 
 ## 編集・加工カテゴリの追加
 - [x] 編集・加工カテゴリにMagnific、Gigapixel、Tracejourney、Finalframe、Topazを追加
+
+## 動画生成ツールの追加
+- [x] 動画生成カテゴリにFLOW、Runway、Kling、Flova.AI、Luma、Hailuo、Higgsfield、Domo.AI、Sora、Grok Video、Vidu、Wan、Seedance、PixVerse、dora.studio、sousaku AI、HeyGen、Synthesia、No Lang、Veoを追加
