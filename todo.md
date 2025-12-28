@@ -169,3 +169,16 @@
 - [x] UI/UXインタラクション実装（スクロールアニメーション、ボタンホバー、blur-in効果）
 - [x] Toolsセクションのデザイン調整（モノクロ/ゴールドライン統一）
 - [x] Contactセクションに新コピー追加（「あなたの想いを、聴かせてください。」）
+
+## Web Design Specification Ver. 2.0 - Aquatic Flow（思考の水源）
+- [x] グローバルデザイン変更（カラーパレット: Ice Blue White #F4F8FA、Deep Ink Blue #2B3A42、Champagne Gold #C0A060）
+- [x] タイポグラフィ変更（Heading: しっぽり明朝、Body: Zen Kaku Gothic New）
+- [x] 水面の揺らめき背景（コースティクス）の実装
+- [x] Click Ripple効果の実装
+- [x] Glassmorphism（磨りガラス）表現の実装
+- [x] Heroセクションリデザイン（3本の光アニメーション）
+- [x] Philosophyセクションリデザイン（概念図とステートメント「源流は、常に『音』にある。」）
+- [ ] Worksセクションリデザイン（Tier 1/3/5の代表作表示）
+- [x] Service & Pricingセクション完全リデザイン（5Tierプラン、共通事項、アコーディオン）
+- [x] Market Referenceモーダルの実装（価格比較表）
+- [x] Contactセクションリデザイン（新コピー「その波紋を、あなたのビジネスへ。」）

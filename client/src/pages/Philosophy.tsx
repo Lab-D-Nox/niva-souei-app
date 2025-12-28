@@ -1,145 +1,327 @@
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Sparkles, Eye, Heart, Lightbulb } from "lucide-react";
+import { ArrowRight, Music, Video, BookOpen, Droplets } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+
+// Scroll reveal hook
+function useScrollReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
+// Concept Diagram Component
+function ConceptDiagram() {
+  return (
+    <div className="relative w-full max-w-lg mx-auto aspect-square">
+      {/* Central sync point */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center">
+            <Droplets className="w-8 h-8 text-gold" />
+          </div>
+        </div>
+        <div className="absolute inset-0 rounded-full border border-gold/30 animate-ping" style={{ animationDuration: '3s' }} />
+      </div>
+      
+      {/* Sound node - Top */}
+      <div className="absolute left-1/2 top-0 -translate-x-1/2">
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+            <Music className="w-8 h-8 text-gold" />
+          </div>
+          <span className="text-sm font-serif text-[#2B3A42]">音</span>
+          <span className="text-xs text-[#5A6B75]">Sound</span>
+        </div>
+      </div>
+      
+      {/* Visual node - Bottom Left */}
+      <div className="absolute left-0 bottom-[15%]">
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+            <Video className="w-8 h-8 text-[#5B8A9A]" />
+          </div>
+          <span className="text-sm font-serif text-[#2B3A42]">映像</span>
+          <span className="text-xs text-[#5A6B75]">Visual</span>
+        </div>
+      </div>
+      
+      {/* Story node - Bottom Right */}
+      <div className="absolute right-0 bottom-[15%]">
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+            <BookOpen className="w-8 h-8 text-[#7A9E7E]" />
+          </div>
+          <span className="text-sm font-serif text-[#2B3A42]">物語</span>
+          <span className="text-xs text-[#5A6B75]">Story</span>
+        </div>
+      </div>
+      
+      {/* Connecting lines with animation */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
+        {/* Sound to Center */}
+        <line 
+          x1="200" y1="60" x2="200" y2="160" 
+          stroke="url(#goldGradient)" 
+          strokeWidth="2" 
+          strokeDasharray="8 4"
+          className="diagram-line"
+          style={{ animationDelay: '0s' }}
+        />
+        {/* Visual to Center */}
+        <line 
+          x1="60" y1="300" x2="160" y2="220" 
+          stroke="url(#blueGradient)" 
+          strokeWidth="2" 
+          strokeDasharray="8 4"
+          className="diagram-line"
+          style={{ animationDelay: '0.3s' }}
+        />
+        {/* Story to Center */}
+        <line 
+          x1="340" y1="300" x2="240" y2="220" 
+          stroke="url(#greenGradient)" 
+          strokeWidth="2" 
+          strokeDasharray="8 4"
+          className="diagram-line"
+          style={{ animationDelay: '0.6s' }}
+        />
+        
+        {/* Gradients */}
+        <defs>
+          <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#C0A060" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#C0A060" stopOpacity="0.8" />
+          </linearGradient>
+          <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#5B8A9A" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#5B8A9A" stopOpacity="0.8" />
+          </linearGradient>
+          <linearGradient id="greenGradient" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#7A9E7E" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#7A9E7E" stopOpacity="0.8" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  );
+}
 
 export default function Philosophy() {
+  const heroReveal = useScrollReveal();
+  const diagramReveal = useScrollReveal();
+  const statementReveal = useScrollReveal();
+  const processReveal = useScrollReveal();
+  const ctaReveal = useScrollReveal();
+
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-primary/5 to-background -z-10" />
-        <div className="absolute inset-0 overflow-hidden -z-10">
-          <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[oklch(0.65_0.2_230)]/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="container">
+      <section className="section">
+        <div 
+          ref={heroReveal.ref}
+          className={`container transition-all duration-1000 ${heroReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
+        >
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase mb-4">
+            <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Philosophy
             </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6">
-              <span className="gradient-text">Nivaの想映</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2B3A42] mb-6">
+              Nivaの想映
             </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-xl text-[#5A6B75] leading-relaxed">
               想い/意図を、AIで"伝わる映像"として可視化・翻訳する表現活動
             </p>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
+      {/* Concept Diagram Section */}
+      <section className="section bg-white/50">
+        <div 
+          ref={diagramReveal.ref}
+          className={`container transition-all duration-1000 ${diagramReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Diagram */}
+            <div className="order-2 lg:order-1">
+              <ConceptDiagram />
+            </div>
+            
+            {/* Statement */}
+            <div className="order-1 lg:order-2 text-center lg:text-left">
+              <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42] mb-8 leading-relaxed">
+                源流は、常に<br />
+                <span className="text-gold">『音』</span>にある。
+              </h2>
+              <p className="text-lg text-[#5A6B75] leading-relaxed mb-6">
+                音楽が感情を呼び起こし、<br />
+                映像がその感情を可視化し、<br />
+                物語がすべてを意味で包む。
+              </p>
+              <p className="text-[#5A6B75] leading-relaxed">
+                この三要素が「同期」する瞬間、<br />
+                見る人の心に波紋が生まれる。<br />
+                それが、Nivaの想映の核心です。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Statement */}
       <section className="section">
-        <div className="container max-w-4xl">
-          {/* Introduction */}
-          <div className="prose prose-lg max-w-none mb-16">
-            <blockquote className="text-xl border-l-4 border-primary pl-6 italic text-muted-foreground">
-              「想映」とは、想いを映像に翻訳すること。
-              技術はあくまで手段であり、主役は常に「想い」。
-            </blockquote>
-          </div>
-
-          {/* Core Values */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">想いを主役に</h3>
-              <p className="text-sm text-muted-foreground">
-                技術や手法ではなく、伝えたい想いを中心に据える
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">伝わる形に</h3>
-              <p className="text-sm text-muted-foreground">
-                見る人の心に届く、最適な表現形式を追求する
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Lightbulb className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">AIは道具</h3>
-              <p className="text-sm text-muted-foreground">
-                AIは表現の可能性を広げる道具であり、創造の主体ではない
-              </p>
-            </div>
-          </div>
-
-          {/* Philosophy Details */}
-          <div className="space-y-12">
-            <div className="glass-card p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-primary to-transparent" />
-              <h2 className="text-2xl font-light text-primary mb-4">なぜ「想映」なのか</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                「想映」という言葉には、「想い」を「映像」として「映す」という意味を込めています。
-                単なる画像生成や動画制作ではなく、クライアントや自分自身の内にある感情、意図、
-                ビジョンを、見る人の心に届く形へと翻訳する行為です。
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                AIの進化により、誰もが高品質な映像を生成できる時代になりました。
-                しかし、技術だけでは「伝わる」表現は生まれません。
-                何を伝えたいのか、誰に届けたいのか、どんな感情を呼び起こしたいのか。
-                その「想い」を深く理解し、最適な形に翻訳することこそが、想映の本質です。
-              </p>
-            </div>
-
-            <div className="glass-card p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[oklch(0.65_0.2_230)] to-transparent" />
-              <h2 className="text-2xl font-light text-primary mb-4">AIとの向き合い方</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                AIは驚異的なスピードで進化し、表現の可能性を大きく広げています。
-                しかし、AIはあくまで道具であり、創造の主体ではありません。
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                プロンプトを入力すれば画像が出力される。
-                その便利さの裏で、「何を伝えたいのか」という本質が置き去りにされがちです。
-                想映では、AIを「想いを形にするための最高の道具」として位置づけ、
-                その特性を理解し、最大限に活用します。
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                複数のツールを組み合わせ、それぞれの強みを活かし、
-                時には手作業で調整を加えながら、「伝わる」表現を追求します。
-              </p>
-            </div>
-
-            <div className="glass-card p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-rose-500 to-transparent" />
-              <h2 className="text-2xl font-light text-primary mb-4">クリエイターとしての姿勢</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                想映は、単なる受託制作ではありません。
-                クライアントの想いに寄り添い、時にはクライアント自身も気づいていない
-                本当の意図を引き出し、最適な形に翻訳するパートナーシップです。
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                「こんな感じで」という曖昧なイメージを、
-                「これが伝えたかったことだ」という確信に変える。
-                それが想映のクリエイターとしての役割です。
-              </p>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="mt-16 text-center">
-            <p className="text-muted-foreground mb-6">
-              あなたの想いを、形にしませんか？
+        <div 
+          ref={statementReveal.ref}
+          className={`container max-w-4xl transition-all duration-1000 ${statementReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
+        >
+          <blockquote className="text-center">
+            <p className="text-2xl md:text-3xl lg:text-4xl font-serif text-[#2B3A42] leading-relaxed mb-8">
+              「想映」とは、<br />
+              想いを映像に<span className="text-gold">翻訳</span>すること。
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="group">
-                <Link href="/contact">
-                  依頼する
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/works">作品を見る</Link>
-              </Button>
+            <p className="text-lg text-[#5A6B75] leading-relaxed max-w-2xl mx-auto">
+              技術はあくまで手段であり、主役は常に「想い」。<br />
+              AIの進化により、誰もが高品質な映像を生成できる時代になりました。<br />
+              しかし、技術だけでは「伝わる」表現は生まれません。
+            </p>
+          </blockquote>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="section bg-white/50">
+        <div 
+          ref={processReveal.ref}
+          className={`container max-w-4xl transition-all duration-1000 ${processReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
+        >
+          <div className="text-center mb-12">
+            <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
+              Process
+            </p>
+            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42]">
+              ワンストップ・クリエーション
+            </h2>
+          </div>
+
+          <div className="space-y-8">
+            {/* Step 1 */}
+            <div className="glass-card p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gold font-serif text-xl">1</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">ヒアリング</h3>
+                  <p className="text-[#5A6B75] leading-relaxed">
+                    クライアントの想いに寄り添い、時にはクライアント自身も気づいていない
+                    本当の意図を引き出します。「こんな感じで」という曖昧なイメージを、
+                    「これが伝えたかったことだ」という確信に変える第一歩です。
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* Step 2 */}
+            <div className="glass-card p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#5B8A9A] to-transparent" />
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 rounded-full bg-[#5B8A9A]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#5B8A9A] font-serif text-xl">2</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">コンセプト設計</h3>
+                  <p className="text-[#5A6B75] leading-relaxed">
+                    音・映像・物語の三要素をどう組み合わせるか。
+                    ムードボードや絵コンテを通じて、完成形のビジョンを共有します。
+                    この段階で「同期」のポイントを明確にします。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="glass-card p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#7A9E7E] to-transparent" />
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 rounded-full bg-[#7A9E7E]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#7A9E7E] font-serif text-xl">3</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">制作・翻訳</h3>
+                  <p className="text-[#5A6B75] leading-relaxed">
+                    複数のAIツールを組み合わせ、それぞれの強みを活かし、
+                    時には手作業で調整を加えながら、「伝わる」表現を追求します。
+                    AIは「想いを形にするための最高の道具」として活用します。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="glass-card p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gold font-serif text-xl">4</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">納品・波紋</h3>
+                  <p className="text-[#5A6B75] leading-relaxed">
+                    完成した作品をお届けし、その波紋があなたのビジネスや表現活動に
+                    広がっていくのを見届けます。必要に応じて、各プラットフォームへの
+                    最適化もサポートします。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section bg-[#2B3A42] text-[#F4F8FA]">
+        <div 
+          ref={ctaReveal.ref}
+          className={`container text-center transition-all duration-1000 ${ctaReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
+        >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6">
+            あなたの想いを、<br className="md:hidden" />形にしませんか？
+          </h2>
+          <p className="text-lg text-[#F4F8FA]/70 mb-8 max-w-2xl mx-auto">
+            まずはお気軽にご相談ください。
+            ヒアリングを通じて、最適なプランと進め方をご提案します。
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button asChild size="lg" className="bg-gold hover:bg-gold/90 text-[#2B3A42] rounded-full px-8">
+              <Link href="/contact">
+                依頼する
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-[#F4F8FA]/30 text-[#F4F8FA] hover:bg-[#F4F8FA]/10 rounded-full px-8">
+              <Link href="/works">作品を見る</Link>
+            </Button>
           </div>
         </div>
       </section>

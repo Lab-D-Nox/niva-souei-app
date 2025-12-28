@@ -40,91 +40,62 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Jost", "Noto Sans JP", system-ui, sans-serif;
   
-  /* Custom colors for Niva's Souei */
+  /* Aquatic Flow Typography */
+  --font-sans: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --font-serif: "Shippori Mincho", serif;
+  
+  /* Custom colors for Niva's Souei - Aquatic Flow */
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
 }
 
-/* Niva's Souei - Dark Mode Premium Theme */
-/* 漆黒 (#080808) + オフホワイト + シャンパンゴールド */
+/* Niva's Souei - Aquatic Flow Theme (思考の水源) */
+/* Ice Blue White (#F4F8FA) + Deep Ink Blue (#2B3A42) + Champagne Gold (#C0A060) */
 :root {
   /* Primary - Champagne Gold */
-  --primary: oklch(0.75 0.08 85);
-  --primary-foreground: oklch(0.1 0 0);
-  --sidebar-primary: oklch(0.75 0.08 85);
-  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --primary: #C0A060;
+  --primary-foreground: #F4F8FA;
+  --sidebar-primary: #C0A060;
+  --sidebar-primary-foreground: #F4F8FA;
   
   /* Gold accent */
-  --gold: oklch(0.78 0.1 85);
-  --gold-foreground: oklch(0.1 0 0);
-  
-  /* Accent colors for sync lines */
-  --accent-red: oklch(0.65 0.2 25);
-  --accent-blue: oklch(0.65 0.2 250);
-  --accent-green: oklch(0.65 0.2 145);
+  --gold: #C0A060;
+  --gold-foreground: #2B3A42;
   
   /* Chart colors */
-  --chart-1: oklch(0.75 0.08 85);
-  --chart-2: oklch(0.65 0.2 25);
-  --chart-3: oklch(0.65 0.2 250);
-  --chart-4: oklch(0.65 0.2 145);
-  --chart-5: oklch(0.5 0.05 85);
+  --chart-1: #C0A060;
+  --chart-2: #5B8A9A;
+  --chart-3: #7A9E7E;
+  --chart-4: #9A7B8A;
+  --chart-5: #8A8A5B;
   
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   
-  /* Dark theme as default - 漆黒ベース */
-  --background: oklch(0.08 0 0);
-  --foreground: oklch(0.95 0.01 85);
-  --card: oklch(0.12 0.005 0);
-  --card-foreground: oklch(0.95 0.01 85);
-  --popover: oklch(0.12 0.005 0);
-  --popover-foreground: oklch(0.95 0.01 85);
-  --secondary: oklch(0.15 0.005 0);
-  --secondary-foreground: oklch(0.85 0.01 85);
-  --muted: oklch(0.18 0.005 0);
-  --muted-foreground: oklch(0.65 0.02 85);
-  --accent: oklch(0.15 0.01 85);
-  --accent-foreground: oklch(0.95 0.01 85);
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.2 0.01 85);
-  --input: oklch(0.2 0.01 85);
-  --ring: oklch(0.75 0.08 85);
-  --sidebar: oklch(0.1 0.005 0);
-  --sidebar-foreground: oklch(0.95 0.01 85);
-  --sidebar-accent: oklch(0.15 0.005 0);
-  --sidebar-accent-foreground: oklch(0.95 0.01 85);
-  --sidebar-border: oklch(0.2 0.01 85);
-  --sidebar-ring: oklch(0.75 0.08 85);
-}
-
-/* Light mode fallback (optional) */
-.light {
-  --primary: oklch(0.5 0.1 85);
-  --primary-foreground: oklch(0.98 0 0);
-  --background: oklch(0.98 0.005 85);
-  --foreground: oklch(0.15 0.02 85);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 85);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 85);
-  --secondary: oklch(0.95 0.01 85);
-  --secondary-foreground: oklch(0.3 0.02 85);
-  --muted: oklch(0.93 0.01 85);
-  --muted-foreground: oklch(0.45 0.02 85);
-  --accent: oklch(0.93 0.02 85);
-  --accent-foreground: oklch(0.15 0.02 85);
-  --border: oklch(0.88 0.01 85);
-  --input: oklch(0.88 0.01 85);
-  --ring: oklch(0.5 0.1 85);
-  --sidebar: oklch(0.97 0.005 85);
-  --sidebar-foreground: oklch(0.15 0.02 85);
-  --sidebar-accent: oklch(0.93 0.01 85);
-  --sidebar-accent-foreground: oklch(0.15 0.02 85);
-  --sidebar-border: oklch(0.88 0.01 85);
-  --sidebar-ring: oklch(0.5 0.1 85);
+  /* Light Aquatic theme - Ice Blue White base */
+  --background: #F4F8FA;
+  --foreground: #2B3A42;
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #2B3A42;
+  --popover: rgba(255, 255, 255, 0.9);
+  --popover-foreground: #2B3A42;
+  --secondary: rgba(43, 58, 66, 0.08);
+  --secondary-foreground: #2B3A42;
+  --muted: rgba(43, 58, 66, 0.05);
+  --muted-foreground: #5A6B75;
+  --accent: rgba(192, 160, 96, 0.15);
+  --accent-foreground: #2B3A42;
+  --destructive: #DC3545;
+  --destructive-foreground: #F4F8FA;
+  --border: rgba(43, 58, 66, 0.12);
+  --input: rgba(43, 58, 66, 0.08);
+  --ring: #C0A060;
+  --sidebar: rgba(244, 248, 250, 0.95);
+  --sidebar-foreground: #2B3A42;
+  --sidebar-accent: rgba(192, 160, 96, 0.1);
+  --sidebar-accent-foreground: #2B3A42;
+  --sidebar-border: rgba(43, 58, 66, 0.1);
+  --sidebar-ring: #C0A060;
 }
 
 @layer base {
@@ -133,6 +104,8 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: "Zen Kaku Gothic New", system-ui, sans-serif;
+    font-weight: 300;
     font-feature-settings: "kern" 1, "liga" 1;
   }
   button:not(:disabled),
@@ -147,9 +120,12 @@
     @apply cursor-pointer;
   }
   
-  /* Typography enhancements */
+  /* Typography - Shippori Mincho for headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium tracking-tight;
+    font-family: "Shippori Mincho", serif;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: #2B3A42;
   }
   
   h1 {
@@ -194,23 +170,37 @@
     }
   }
   
-  /* Glass morphism card style - Dark theme */
+  /* Glassmorphism card style - Aquatic theme */
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(43, 58, 66, 0.08);
+  }
+  
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 12px 40px rgba(43, 58, 66, 0.12);
   }
   
   /* Gold gradient text */
   .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, 
-      oklch(0.85 0.1 85) 0%, 
-      oklch(0.7 0.08 85) 50%, 
-      oklch(0.85 0.1 85) 100%);
+    background: linear-gradient(135deg, #D4B86A 0%, #C0A060 50%, #A08040 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
   /* Gold text */
   .text-gold {
-    color: oklch(0.78 0.1 85);
+    color: #C0A060;
+  }
+  
+  /* Deep Ink Blue text */
+  .text-ink {
+    color: #2B3A42;
   }
   
   /* Section styling */
@@ -218,25 +208,35 @@
     @apply py-20 md:py-32;
   }
   
-  /* Badge styles - monochrome/gold */
-  .badge-client {
-    @apply bg-[oklch(0.78_0.1_85)]/20 text-[oklch(0.85_0.08_85)] border border-[oklch(0.78_0.1_85)]/30;
+  /* Tier badges */
+  .badge-tier-1 {
+    background: linear-gradient(135deg, rgba(192, 160, 96, 0.15), rgba(192, 160, 96, 0.25));
+    color: #8A7040;
+    border: 1px solid rgba(192, 160, 96, 0.3);
   }
   
-  .badge-personal {
-    @apply bg-white/10 text-white/80 border border-white/20;
+  .badge-tier-2 {
+    background: linear-gradient(135deg, rgba(91, 138, 154, 0.15), rgba(91, 138, 154, 0.25));
+    color: #4A7080;
+    border: 1px solid rgba(91, 138, 154, 0.3);
   }
   
-  .badge-spot {
-    @apply bg-white/5 text-white/60 border border-white/10;
+  .badge-tier-3 {
+    background: linear-gradient(135deg, rgba(122, 158, 126, 0.15), rgba(122, 158, 126, 0.25));
+    color: #5A7E5E;
+    border: 1px solid rgba(122, 158, 126, 0.3);
   }
   
-  .badge-standard {
-    @apply bg-[oklch(0.78_0.1_85)]/10 text-[oklch(0.85_0.08_85)] border border-[oklch(0.78_0.1_85)]/20;
+  .badge-tier-4 {
+    background: linear-gradient(135deg, rgba(154, 123, 138, 0.15), rgba(154, 123, 138, 0.25));
+    color: #7A5B6A;
+    border: 1px solid rgba(154, 123, 138, 0.3);
   }
   
-  .badge-grand {
-    @apply bg-[oklch(0.78_0.1_85)]/30 text-[oklch(0.9_0.08_85)] border border-[oklch(0.78_0.1_85)]/50;
+  .badge-tier-5 {
+    background: linear-gradient(135deg, rgba(192, 160, 96, 0.25), rgba(192, 160, 96, 0.4));
+    color: #705820;
+    border: 1px solid rgba(192, 160, 96, 0.5);
   }
   
   /* Hover card effect */
@@ -246,60 +246,155 @@
   
   .hover-lift:hover {
     @apply -translate-y-2;
-    box-shadow: 0 20px 40px -15px oklch(0.78 0.1 85 / 0.2);
+    box-shadow: 0 20px 40px -15px rgba(192, 160, 96, 0.25);
   }
   
-  /* Ripple animation */
-  @keyframes ripple {
+  /* Water ripple animation - Click effect */
+  @keyframes waterRipple {
     0% {
-      transform: scale(0.8);
-      opacity: 1;
+      transform: scale(0);
+      opacity: 0.6;
     }
     100% {
-      transform: scale(2.5);
+      transform: scale(4);
       opacity: 0;
     }
   }
   
-  .ripple-effect {
+  .water-ripple {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, oklch(0.78 0.1 85 / 0.3) 0%, transparent 70%);
-    animation: ripple 3s infinite ease-out;
+    background: radial-gradient(circle, rgba(192, 160, 96, 0.4) 0%, transparent 70%);
+    animation: waterRipple 1.5s ease-out forwards;
+    pointer-events: none;
   }
   
-  /* Sync lines animation */
-  @keyframes syncLine {
-    0% {
-      transform: translateX(-100%);
-      opacity: 0;
+  /* Caustics background animation */
+  @keyframes caustics {
+    0%, 100% {
+      opacity: 0.12;
+      transform: scale(1) rotate(0deg);
     }
     50% {
+      opacity: 0.18;
+      transform: scale(1.05) rotate(2deg);
+    }
+  }
+  
+  .caustics-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.15;
+    animation: caustics 8s infinite ease-in-out;
+  }
+  
+  /* Three light beams animation */
+  @keyframes lightBeam {
+    0% {
+      transform: translateX(-100%) scaleX(0.5);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    70% {
       opacity: 1;
     }
     100% {
-      transform: translateX(100%);
+      transform: translateX(0) scaleX(1);
       opacity: 0;
     }
   }
   
-  .sync-line {
-    animation: syncLine 3s infinite ease-in-out;
+  .light-beam {
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    animation: lightBeam 3s infinite ease-in-out;
   }
   
-  .sync-line-red {
-    background: linear-gradient(90deg, transparent, oklch(0.65 0.2 25), transparent);
+  .light-beam-sound {
+    background: linear-gradient(90deg, transparent, #C0A060, transparent);
+    top: 45%;
+    animation-delay: 0s;
   }
   
-  .sync-line-blue {
-    background: linear-gradient(90deg, transparent, oklch(0.65 0.2 250), transparent);
-    animation-delay: 0.5s;
+  .light-beam-visual {
+    background: linear-gradient(90deg, transparent, #5B8A9A, transparent);
+    top: 50%;
+    animation-delay: 0.3s;
   }
   
-  .sync-line-green {
-    background: linear-gradient(90deg, transparent, oklch(0.65 0.2 145), transparent);
+  .light-beam-story {
+    background: linear-gradient(90deg, transparent, #7A9E7E, transparent);
+    top: 55%;
+    animation-delay: 0.6s;
+  }
+  
+  /* Sync point burst */
+  @keyframes syncBurst {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+  
+  .sync-burst {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    margin-top: -50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(192, 160, 96, 0.6) 0%, transparent 70%);
+    animation: syncBurst 3s infinite ease-out;
     animation-delay: 1s;
   }
+  
+  /* Concentric ripples from sync point */
+  @keyframes concentricRipple {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.8;
+      border-width: 2px;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+      border-width: 0.5px;
+    }
+  }
+  
+  .concentric-ripple {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 60px;
+    height: 60px;
+    margin-left: -30px;
+    margin-top: -30px;
+    border-radius: 50%;
+    border: 2px solid rgba(192, 160, 96, 0.5);
+    animation: concentricRipple 4s infinite ease-out;
+  }
+  
+  .concentric-ripple:nth-child(2) { animation-delay: 0.8s; }
+  .concentric-ripple:nth-child(3) { animation-delay: 1.6s; }
+  .concentric-ripple:nth-child(4) { animation-delay: 2.4s; }
   
   /* Scroll indicator animation */
   @keyframes scrollDown {
@@ -329,11 +424,27 @@
     animation: blurIn 0.8s ease-out forwards;
   }
   
+  /* Float animation for elements */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .float {
+    animation: float 4s infinite ease-in-out;
+  }
+  
   /* Liquid button effect */
   .liquid-button {
     position: relative;
     overflow: hidden;
     transition: all 0.4s ease;
+    background: #C0A060;
+    color: #F4F8FA;
   }
   
   .liquid-button::before {
@@ -343,7 +454,7 @@
     left: 50%;
     width: 0;
     height: 0;
-    background: oklch(0.78 0.1 85 / 0.2);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: width 0.6s ease, height 0.6s ease;
@@ -354,39 +465,66 @@
     height: 300%;
   }
   
-  /* Mouse stalker ripple */
-  .mouse-ripple {
-    pointer-events: none;
-    position: fixed;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid oklch(0.78 0.1 85 / 0.5);
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease-out, opacity 0.15s ease-out;
-    z-index: 9999;
+  /* Outline button */
+  .outline-button {
+    background: transparent;
+    border: 1px solid #C0A060;
+    color: #C0A060;
+    transition: all 0.3s ease;
   }
   
-  /* Particle glow effect */
-  @keyframes particleFloat {
-    0%, 100% {
-      transform: translateY(0) translateX(0);
-      opacity: 0.3;
+  .outline-button:hover {
+    background: rgba(192, 160, 96, 0.1);
+  }
+  
+  /* Diagram animation */
+  @keyframes drawLine {
+    0% {
+      stroke-dashoffset: 100;
     }
-    50% {
-      transform: translateY(-20px) translateX(10px);
-      opacity: 0.8;
+    100% {
+      stroke-dashoffset: 0;
     }
   }
   
-  .particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: oklch(0.78 0.1 85);
-    border-radius: 50%;
-    animation: particleFloat 4s infinite ease-in-out;
-    box-shadow: 0 0 10px oklch(0.78 0.1 85 / 0.5);
+  .diagram-line {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: drawLine 2s ease-out forwards;
+  }
+  
+  /* Accordion animation */
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, padding 0.3s ease;
+  }
+  
+  .accordion-content.open {
+    max-height: 500px;
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    background: rgba(43, 58, 66, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    background: rgba(244, 248, 250, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(192, 160, 96, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(43, 58, 66, 0.25);
+  }
+  
+  /* Price card */
+  .price-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .price-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(43, 58, 66, 0.15);
   }
 }
 
@@ -429,11 +567,21 @@
   
   /* Text shadow for glow effect */
   .text-glow {
-    text-shadow: 0 0 20px oklch(0.78 0.1 85 / 0.5);
+    text-shadow: 0 0 20px rgba(192, 160, 96, 0.5);
   }
   
   /* Border glow */
   .border-glow {
-    box-shadow: 0 0 20px oklch(0.78 0.1 85 / 0.3), inset 0 0 20px oklch(0.78 0.1 85 / 0.1);
+    box-shadow: 0 0 20px rgba(192, 160, 96, 0.3), inset 0 0 20px rgba(192, 160, 96, 0.1);
+  }
+  
+  /* Serif font utility */
+  .font-serif {
+    font-family: "Shippori Mincho", serif;
+  }
+  
+  /* Sans font utility */
+  .font-sans {
+    font-family: "Zen Kaku Gothic New", system-ui, sans-serif;
   }
 }

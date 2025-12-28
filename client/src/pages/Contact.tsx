@@ -213,11 +213,12 @@ export default function Contact() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Request
             </p>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light gradient-text mb-6">
-              あなたの「想い」を、聴かせてください。
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#2B3A42] mb-6">
+              その波紋を、<br className="md:hidden" />
+              <span className="text-gold">あなたのビジネス</span>へ。
             </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              プロジェクトのご相談、お見積もりなど、お気軽にお問い合わせください。
+            <p className="text-[#5A6B75] max-w-2xl mx-auto leading-relaxed">
+              プロジェクトのご相談、お見積もりなど、お気軽にお問い合わせください。<br />
               フォームに記入後、公式LINEでやり取りを進めます。
             </p>
           </div>
