@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,7 @@ interface WorkCardProps {
     title: string;
     description?: string | null;
     thumbnailUrl?: string | null;
+    mediaUrl?: string | null;
     origin: string;
     serviceTier?: string | null;
     likeCount: number;
@@ -41,7 +43,176 @@ const serviceTierLabels: Record<string, string> = {
   grand: "Grand Story",
 };
 
+// Helper function to check if URL is an image
+function isImageUrl(url: string): boolean {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+  const lowerUrl = url.toLowerCase();
+  return imageExtensions.some(ext => lowerUrl.includes(ext));
+}
+
+// Helper function to check if URL is a video
+function isVideoUrl(url: string): boolean {
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+}
+
+// Component to extract video first frame as thumbnail
+function VideoThumbnail({ src, alt }: { src: string; alt: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    if (!video || !canvas) return;
+
+    const handleLoadedData = () => {
+      // Seek to first frame
+      video.currentTime = 0.1;
+    };
+
+    const handleSeeked = () => {
+      try {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setThumbnail(dataUrl);
+        }
+      } catch (e) {
+        console.error('Failed to capture video frame:', e);
+        setError(true);
+      }
+    };
+
+    const handleError = () => {
+      setError(true);
+    };
+
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('seeked', handleSeeked);
+    video.addEventListener('error', handleError);
+
+    return () => {
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('seeked', handleSeeked);
+      video.removeEventListener('error', handleError);
+    };
+  }, [src]);
+
+  if (error) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted">
+        <Play className="h-12 w-12" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        src={src}
+        className="hidden"
+        muted
+        playsInline
+        crossOrigin="anonymous"
+        preload="metadata"
+      />
+      <canvas ref={canvasRef} className="hidden" />
+      {thumbnail ? (
+        <img
+          src={thumbnail}
+          alt={alt}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted animate-pulse">
+          <Play className="h-12 w-12" />
+        </div>
+      )}
+    </>
+  );
+}
+
+// Audio placeholder component
+function AudioThumbnail() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gold/20 to-gold/5">
+      <div className="relative">
+        <div className="absolute inset-0 animate-ping opacity-20">
+          <Volume2 className="h-16 w-16 text-gold" />
+        </div>
+        <Music className="h-16 w-16 text-gold" />
+      </div>
+      <div className="flex gap-1 mt-4">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="w-1 bg-gold/60 rounded-full animate-pulse"
+            style={{
+              height: `${12 + Math.random() * 20}px`,
+              animationDelay: `${i * 0.1}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function WorkCard({ work, className }: WorkCardProps) {
+  // Determine what to show as thumbnail
+  const renderThumbnail = () => {
+    // 1. If thumbnailUrl is set, use it
+    if (work.thumbnailUrl) {
+      return (
+        <img
+          src={work.thumbnailUrl}
+          alt={work.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+      );
+    }
+
+    // 2. If no thumbnail, check mediaUrl based on work type
+    if (work.mediaUrl) {
+      // For image type or if mediaUrl is an image
+      if (work.type === 'image' || isImageUrl(work.mediaUrl)) {
+        return (
+          <img
+            src={work.mediaUrl}
+            alt={work.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        );
+      }
+
+      // For video type or if mediaUrl is a video
+      if (work.type === 'video' || isVideoUrl(work.mediaUrl)) {
+        return <VideoThumbnail src={work.mediaUrl} alt={work.title} />;
+      }
+    }
+
+    // 3. For audio type, show audio placeholder
+    if (work.type === 'audio') {
+      return <AudioThumbnail />;
+    }
+
+    // 4. Default fallback - show type icon
+    return (
+      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+        {typeIcons[work.type] || <ImageIcon className="h-12 w-12" />}
+      </div>
+    );
+  };
+
   return (
     <Link href={`/works/${work.id}`}>
       <article
@@ -55,17 +226,7 @@ export function WorkCard({ work, className }: WorkCardProps) {
       >
         {/* Thumbnail */}
         <div className="relative aspect-[4/3] bg-muted overflow-hidden">
-          {work.thumbnailUrl ? (
-            <img
-              src={work.thumbnailUrl}
-              alt={work.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              {typeIcons[work.type] || <ImageIcon className="h-12 w-12" />}
-            </div>
-          )}
+          {renderThumbnail()}
           
           {/* Type badge */}
           <div className="absolute top-3 left-3">
@@ -74,6 +235,15 @@ export function WorkCard({ work, className }: WorkCardProps) {
               <span className="ml-1">{typeLabels[work.type]}</span>
             </Badge>
           </div>
+          
+          {/* Play icon overlay for video */}
+          {work.type === 'video' && (
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="w-16 h-16 rounded-full bg-gold/80 flex items-center justify-center">
+                <Play className="h-8 w-8 text-white fill-white ml-1" />
+              </div>
+            </div>
+          )}
           
           {/* Overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
