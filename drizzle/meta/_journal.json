@@ -29,6 +29,13 @@
       "when": 1766953511597,
       "tag": "0003_short_king_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1766962833019,
+      "tag": "0004_striped_valeria_richards",
+      "breakpoints": true
     }
   ]
 }

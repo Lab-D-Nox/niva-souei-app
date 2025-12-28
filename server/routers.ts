@@ -662,6 +662,48 @@ export const appRouter = router({
         return { url };
       }),
   }),
+
+  portfolio: router({
+    list: publicProcedure.query(async () => {
+      return await db.getPortfolioItems();
+    }),
+
+    getByPosition: publicProcedure
+      .input(z.object({ position: z.enum(["left", "center", "right"]) }))
+      .query(async ({ input }) => {
+        const items = await db.getPortfolioItems();
+        return items.find(item => item.position === input.position) || null;
+      }),
+
+    upsert: adminProcedure
+      .input(z.object({
+        position: z.enum(["left", "center", "right"]),
+        tier: z.enum(["tier1", "tier2", "tier3", "tier4", "tier5"]),
+        title: z.string().min(1).max(255),
+        subtitle: z.string().max(255).optional(),
+        description: z.string().optional(),
+        videoUrl: z.string().optional(),
+        thumbnailUrl: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.upsertPortfolioItemByPosition(input.position, {
+          tier: input.tier,
+          title: input.title,
+          subtitle: input.subtitle || null,
+          description: input.description || null,
+          videoUrl: input.videoUrl || null,
+          thumbnailUrl: input.thumbnailUrl || null,
+        });
+        return { success: true, id };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deletePortfolioItem(input.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

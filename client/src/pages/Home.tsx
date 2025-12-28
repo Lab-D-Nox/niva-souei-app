@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/Layout";
 import { WorkCard, WorkCardSkeleton } from "@/components/WorkCard";
+import { PortfolioItemDisplay } from "@/components/PortfolioItemEditor";
 import { trpc } from "@/lib/trpc";
 import { ArrowRight, Ear, Eye, Brain, ChevronDown, Sparkles, Palette, Coins } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -330,43 +331,31 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Featured Works by Tier */}
+          {/* Featured Works by Tier - Editable by Admin */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-sm:mobile-horizontal-scroll max-sm:grid-cols-none">
-            {/* Tier 1: Droplet */}
-            <div className="glass-card p-6 hover-lift">
-              <div className="badge-tier-1 inline-block px-3 py-1 rounded-full text-xs font-medium mb-4">
-                Tier 1: Droplet（雫）
-              </div>
-              <h3 className="text-xl font-serif text-[#2B3A42] mb-2">モーションロゴ「一休百福」</h3>
-              <p className="text-sm text-[#5A6B75] mb-4">ロゴアニメーション / 8秒 / 音の可視化</p>
-              <div className="aspect-video bg-[#2B3A42]/5 rounded-lg flex items-center justify-center">
-                <span className="text-[#5A6B75] text-sm">Coming Soon</span>
-              </div>
-            </div>
+            {/* Left Position - Default Tier 1 */}
+            <PortfolioItemDisplay
+              position="left"
+              defaultTier="tier1"
+              defaultTitle="モーションロゴ「一休百福」"
+              defaultSubtitle="ロゴアニメーション / 8秒 / 音の可視化"
+            />
             
-            {/* Tier 3: Stream */}
-            <div className="glass-card p-6 hover-lift">
-              <div className="badge-tier-3 inline-block px-3 py-1 rounded-full text-xs font-medium mb-4">
-                Tier 3: Stream（水流）
-              </div>
-              <h3 className="text-xl font-serif text-[#2B3A42] mb-2">商品CM「I..CANBY」</h3>
-              <p className="text-sm text-[#5A6B75] mb-4">商品プロモーション / 60秒 / AI×実写合成</p>
-              <div className="aspect-video bg-[#2B3A42]/5 rounded-lg flex items-center justify-center">
-                <span className="text-[#5A6B75] text-sm">Coming Soon</span>
-              </div>
-            </div>
+            {/* Center Position - Default Tier 3 */}
+            <PortfolioItemDisplay
+              position="center"
+              defaultTier="tier3"
+              defaultTitle="商品CM「I..CANBY」"
+              defaultSubtitle="商品プロモーション / 60秒 / AI×実写合成"
+            />
             
-            {/* Tier 5: Genesis */}
-            <div className="glass-card p-6 hover-lift">
-              <div className="badge-tier-5 inline-block px-3 py-1 rounded-full text-xs font-medium mb-4">
-                Tier 5: Genesis（源泉）
-              </div>
-              <h3 className="text-xl font-serif text-[#2B3A42] mb-2">コンセプト映像「天女サロン」</h3>
-              <p className="text-sm text-[#5A6B75] mb-4">ブランディング / 3分 / オリジナル楽曲生成</p>
-              <div className="aspect-video bg-[#2B3A42]/5 rounded-lg flex items-center justify-center">
-                <span className="text-[#5A6B75] text-sm">Coming Soon</span>
-              </div>
-            </div>
+            {/* Right Position - Default Tier 5 */}
+            <PortfolioItemDisplay
+              position="right"
+              defaultTier="tier5"
+              defaultTitle="コンセプト映像「天女サロン」"
+              defaultSubtitle="ブランディング / 3分 / オリジナル楽曲生成"
+            />
           </div>
 
           <div className="text-center">

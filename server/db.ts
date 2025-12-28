@@ -12,7 +12,8 @@ import {
   inquiries, InsertInquiry,
   siteSettings, InsertSiteSetting,
   socialLinks, InsertSocialLink,
-  rateLimits
+  rateLimits,
+  portfolioItems, InsertPortfolioItem
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -637,4 +638,61 @@ export async function getAdminUsers() {
     .select()
     .from(users)
     .where(eq(users.role, "admin"));
+}
+
+
+// ============ PORTFOLIO ITEMS FUNCTIONS ============
+export async function getPortfolioItems() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(portfolioItems)
+    .where(eq(portfolioItems.isActive, true))
+    .orderBy(asc(portfolioItems.sortOrder));
+}
+
+export async function getPortfolioItemById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(portfolioItems).where(eq(portfolioItems.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createPortfolioItem(data: InsertPortfolioItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(portfolioItems).values(data);
+  return result[0].insertId;
+}
+
+export async function updatePortfolioItem(id: number, data: Partial<InsertPortfolioItem>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(portfolioItems).set(data).where(eq(portfolioItems.id, id));
+}
+
+export async function deletePortfolioItem(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
+}
+
+export async function upsertPortfolioItemByPosition(position: "left" | "center" | "right", data: Partial<InsertPortfolioItem>) {
+  const db = await getDb();
+  if (!db) return;
+  
+  const existing = await db
+    .select()
+    .from(portfolioItems)
+    .where(eq(portfolioItems.position, position))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    await db.update(portfolioItems).set(data).where(eq(portfolioItems.id, existing[0].id));
+    return existing[0].id;
+  } else {
+    const result = await db.insert(portfolioItems).values({ position, ...data } as InsertPortfolioItem);
+    return result[0].insertId;
+  }
 }

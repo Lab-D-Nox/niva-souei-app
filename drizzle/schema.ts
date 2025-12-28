@@ -267,3 +267,25 @@ export const emailNotificationSettings = mysqlTable("email_notification_settings
 
 export type EmailNotificationSetting = typeof emailNotificationSettings.$inferSelect;
 export type InsertEmailNotificationSetting = typeof emailNotificationSettings.$inferInsert;
+
+
+/**
+ * Portfolio Items table - stores featured works for homepage display
+ */
+export const portfolioItems = mysqlTable("portfolio_items", {
+  id: int("id").autoincrement().primaryKey(),
+  position: mysqlEnum("position", ["left", "center", "right"]).notNull(),
+  tier: mysqlEnum("tier", ["tier1", "tier2", "tier3", "tier4", "tier5"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  subtitle: varchar("subtitle", { length: 255 }),
+  description: text("description"),
+  videoUrl: text("videoUrl"),
+  thumbnailUrl: text("thumbnailUrl"),
+  isActive: boolean("isActive").default(true).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PortfolioItem = typeof portfolioItems.$inferSelect;
+export type InsertPortfolioItem = typeof portfolioItems.$inferInsert;

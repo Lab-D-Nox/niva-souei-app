@@ -29,25 +29,81 @@ function useScrollReveal() {
   return { ref, isVisible };
 }
 
-// Concept Diagram Component
+// Concept Diagram Component with animated lines and ripple effect
 function ConceptDiagram() {
+  const [isVisible, setIsVisible] = useState(false);
+  const diagramRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    
+    if (diagramRef.current) {
+      observer.observe(diagramRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
+  
   return (
-    <div className="relative w-full max-w-lg mx-auto aspect-square">
-      {/* Central sync point */}
+    <div ref={diagramRef} className="relative w-full max-w-lg mx-auto aspect-square">
+      {/* Central sync point with animated ripple */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center">
+        {/* Ripple rings - animated when lines connect */}
+        <div 
+          className={`absolute inset-0 -m-8 rounded-full border-2 border-gold/40 transition-all duration-1000 ${
+            isVisible ? 'scale-150 opacity-0' : 'scale-100 opacity-0'
+          }`}
+          style={{ transitionDelay: '2.5s' }}
+        />
+        <div 
+          className={`absolute inset-0 -m-4 rounded-full border-2 border-gold/50 transition-all duration-1000 ${
+            isVisible ? 'scale-125 opacity-0' : 'scale-100 opacity-0'
+          }`}
+          style={{ transitionDelay: '2.3s' }}
+        />
+        <div 
+          className={`absolute inset-0 rounded-full border-2 border-gold/60 transition-all duration-700 ${
+            isVisible ? 'scale-110 opacity-100' : 'scale-100 opacity-0'
+          }`}
+          style={{ transitionDelay: '2.1s' }}
+        />
+        
+        {/* Core circle */}
+        <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center transition-all duration-500 ${
+          isVisible ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+        }`} style={{ transitionDelay: '2s' }}>
           <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center">
             <Droplets className="w-8 h-8 text-gold" />
           </div>
         </div>
-        <div className="absolute inset-0 rounded-full border border-gold/30 animate-ping" style={{ animationDuration: '3s' }} />
+        
+        {/* Continuous ripple animation after initial animation */}
+        <div 
+          className={`absolute inset-0 rounded-full border border-gold/30 ${
+            isVisible ? 'animate-ping' : 'opacity-0'
+          }`} 
+          style={{ animationDuration: '3s', animationDelay: '3s' }} 
+        />
       </div>
       
       {/* Sound node - Top */}
-      <div className="absolute left-1/2 top-0 -translate-x-1/2">
+      <div className={`absolute left-1/2 top-0 -translate-x-1/2 transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      }`} style={{ transitionDelay: '0s' }}>
         <div className="flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift relative">
             <Music className="w-8 h-8 text-gold" />
+            {/* Pulse effect */}
+            <div className={`absolute inset-0 rounded-full border-2 border-gold/50 ${
+              isVisible ? 'animate-pulse' : 'opacity-0'
+            }`} style={{ animationDelay: '0.5s' }} />
           </div>
           <span className="text-sm font-serif text-[#2B3A42]">音</span>
           <span className="text-xs text-[#5A6B75]">Sound</span>
@@ -55,10 +111,16 @@ function ConceptDiagram() {
       </div>
       
       {/* Visual node - Bottom Left */}
-      <div className="absolute left-0 bottom-[15%]">
+      <div className={`absolute left-0 bottom-[15%] transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+      }`} style={{ transitionDelay: '0.3s' }}>
         <div className="flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift relative">
             <Video className="w-8 h-8 text-[#5B8A9A]" />
+            {/* Pulse effect */}
+            <div className={`absolute inset-0 rounded-full border-2 border-[#5B8A9A]/50 ${
+              isVisible ? 'animate-pulse' : 'opacity-0'
+            }`} style={{ animationDelay: '0.8s' }} />
           </div>
           <span className="text-sm font-serif text-[#2B3A42]">映像</span>
           <span className="text-xs text-[#5A6B75]">Visual</span>
@@ -66,62 +128,97 @@ function ConceptDiagram() {
       </div>
       
       {/* Story node - Bottom Right */}
-      <div className="absolute right-0 bottom-[15%]">
+      <div className={`absolute right-0 bottom-[15%] transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+      }`} style={{ transitionDelay: '0.6s' }}>
         <div className="flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift">
+          <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-2 hover-lift relative">
             <BookOpen className="w-8 h-8 text-[#7A9E7E]" />
+            {/* Pulse effect */}
+            <div className={`absolute inset-0 rounded-full border-2 border-[#7A9E7E]/50 ${
+              isVisible ? 'animate-pulse' : 'opacity-0'
+            }`} style={{ animationDelay: '1.1s' }} />
           </div>
           <span className="text-sm font-serif text-[#2B3A42]">物語</span>
           <span className="text-xs text-[#5A6B75]">Story</span>
         </div>
       </div>
       
-      {/* Connecting lines with animation */}
+      {/* Connecting lines with sequential animation */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
-        {/* Sound to Center */}
+        {/* Sound to Center - Gold line */}
         <line 
-          x1="200" y1="60" x2="200" y2="160" 
+          x1="200" y1="80" x2="200" y2="160" 
           stroke="url(#goldGradient)" 
-          strokeWidth="2" 
-          strokeDasharray="8 4"
-          className="diagram-line"
-          style={{ animationDelay: '0s' }}
+          strokeWidth="3" 
+          strokeLinecap="round"
+          className={`transition-all duration-700 ${
+            isVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ 
+            strokeDasharray: '80',
+            strokeDashoffset: isVisible ? '0' : '80',
+            transitionDelay: '0.8s'
+          }}
         />
-        {/* Visual to Center */}
+        
+        {/* Visual to Center - Blue line */}
         <line 
-          x1="60" y1="300" x2="160" y2="220" 
+          x1="70" y1="300" x2="165" y2="215" 
           stroke="url(#blueGradient)" 
-          strokeWidth="2" 
-          strokeDasharray="8 4"
-          className="diagram-line"
-          style={{ animationDelay: '0.3s' }}
+          strokeWidth="3" 
+          strokeLinecap="round"
+          className={`transition-all duration-700 ${
+            isVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ 
+            strokeDasharray: '140',
+            strokeDashoffset: isVisible ? '0' : '140',
+            transitionDelay: '1.2s'
+          }}
         />
-        {/* Story to Center */}
+        
+        {/* Story to Center - Green line */}
         <line 
-          x1="340" y1="300" x2="240" y2="220" 
+          x1="330" y1="300" x2="235" y2="215" 
           stroke="url(#greenGradient)" 
-          strokeWidth="2" 
-          strokeDasharray="8 4"
-          className="diagram-line"
-          style={{ animationDelay: '0.6s' }}
+          strokeWidth="3" 
+          strokeLinecap="round"
+          className={`transition-all duration-700 ${
+            isVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ 
+            strokeDasharray: '140',
+            strokeDashoffset: isVisible ? '0' : '140',
+            transitionDelay: '1.6s'
+          }}
         />
         
         {/* Gradients */}
         <defs>
           <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#C0A060" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#C0A060" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="#C0A060" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#C0A060" stopOpacity="1" />
           </linearGradient>
           <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#5B8A9A" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#5B8A9A" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="#5B8A9A" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#5B8A9A" stopOpacity="1" />
           </linearGradient>
           <linearGradient id="greenGradient" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#7A9E7E" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#7A9E7E" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="#7A9E7E" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#7A9E7E" stopOpacity="1" />
           </linearGradient>
         </defs>
       </svg>
+      
+      {/* Expanding ripple effect when all lines connect */}
+      <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`} style={{ transitionDelay: '2.2s' }}>
+        <div className="w-32 h-32 rounded-full border border-gold/20 animate-[ripple_3s_ease-out_infinite]" style={{ animationDelay: '2.5s' }} />
+        <div className="absolute inset-0 w-32 h-32 rounded-full border border-gold/15 animate-[ripple_3s_ease-out_infinite]" style={{ animationDelay: '3s' }} />
+        <div className="absolute inset-0 w-32 h-32 rounded-full border border-gold/10 animate-[ripple_3s_ease-out_infinite]" style={{ animationDelay: '3.5s' }} />
+      </div>
     </div>
   );
 }
