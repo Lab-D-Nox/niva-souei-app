@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, X, User, LogOut, Image, PenTool, Heart, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NotificationCenter } from "./NotificationCenter";
+import { ScrollToTop } from "./ScrollToTop";
 
 const navLinks = [
   { href: "/works", label: "作品一覧" },
@@ -236,12 +237,13 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F8FA]">
       <Header />
       <main className="flex-1 pt-16">{children}</main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

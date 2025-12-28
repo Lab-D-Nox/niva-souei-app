@@ -228,16 +228,19 @@ export default function Home() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center animate-fade-in animation-delay-600">
+        <a 
+          href="#philosophy" 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center animate-fade-in animation-delay-600 cursor-pointer hover:opacity-70 transition-opacity"
+        >
           <p className="text-xs tracking-[0.3em] text-gold font-medium mb-3">SCROLL</p>
           <div className="w-px h-16 bg-[#2B3A42]/20 mx-auto relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1/2 bg-gold scroll-indicator-line" />
           </div>
-        </div>
+        </a>
       </section>
 
       {/* Philosophy Section - 概念図とステートメント */}
-      <section className="section">
+      <section id="philosophy" className="section scroll-mt-20">
         <div 
           ref={philosophyReveal.ref}
           className={`container transition-all duration-1000 ${philosophyReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
@@ -295,7 +298,7 @@ export default function Home() {
       </section>
 
       {/* Works Section - Tier表示 */}
-      <section className="section bg-white/50">
+      <section id="works" className="section bg-white/50 scroll-mt-20">
         <div 
           ref={worksReveal.ref}
           className={`container transition-all duration-1000 ${worksReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
@@ -358,7 +361,7 @@ export default function Home() {
       </section>
 
       {/* Service & Pricing Section Preview */}
-      <section className="section">
+      <section id="service" className="section scroll-mt-20">
         <div 
           ref={serviceReveal.ref}
           className={`container transition-all duration-1000 ${serviceReveal.isVisible ? 'blur-in' : 'opacity-0'}`}
