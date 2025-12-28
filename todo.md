@@ -88,3 +88,4 @@
 - [x] XリンクをNivaの実際のアカウントに更新
 - [x] TikTokリンクをNivaの実際のアカウントに更新
 - [x] FacebookリンクをNivaの実際のアカウントに更新
+- [x] noteの項目をLINEに変更し、公式LINEリンクを紐付け
