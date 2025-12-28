@@ -101,3 +101,6 @@
 ## 公式LINEリンク変更
 - [x] SNSリンク集ページのLINEリンクを https://lin.ee/nJQQAw41 に変更
 - [x] お問い合わせフォームのLINEリンクを https://lin.ee/nJQQAw41 に変更
+
+## YouTubeリンク更新
+- [x] SNSリンク集ページのYouTubeリンクを https://www.youtube.com/channel/UCMaZcdLh9Fljg_4zSr2FsMA に変更
