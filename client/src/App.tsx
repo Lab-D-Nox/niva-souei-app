@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ClickRippleProvider } from "./components/ClickRipple";
+import { MouseStalker } from "./components/MouseStalker";
 
 // Pages
 import Home from "./pages/Home";
@@ -48,6 +49,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
         <ClickRippleProvider>
+          <MouseStalker />
           <TooltipProvider>
             <Toaster />
             <Router />

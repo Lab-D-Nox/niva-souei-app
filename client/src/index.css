@@ -528,6 +528,45 @@
   }
 }
 
+/* Mouse Stalker - 水滴カーソル */
+.mouse-stalker-main {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(192, 160, 96, 0.8) 0%, rgba(192, 160, 96, 0.4) 50%, transparent 70%);
+  pointer-events: none;
+  z-index: 99999;
+  transition: transform 0.15s ease-out;
+  mix-blend-mode: normal;
+}
+
+.mouse-stalker-ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(192, 160, 96, 0.4);
+  background: transparent;
+  pointer-events: none;
+  z-index: 99998;
+  transition: transform 0.25s ease-out, border-color 0.2s ease;
+}
+
+.mouse-stalker-ring:hover {
+  border-color: rgba(192, 160, 96, 0.8);
+}
+
+.mouse-stalker-trail {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(192, 160, 96, 0.3);
+  pointer-events: none;
+  z-index: 99997;
+}
+
 /* Click Ripple Effect - 水面の波紋 */
 .click-ripple-container {
   position: relative;
