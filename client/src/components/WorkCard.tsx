@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useState, useRef, useEffect } from "react";
-import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2 } from "lucide-react";
+import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +55,13 @@ function isVideoUrl(url: string): boolean {
   const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
   const lowerUrl = url.toLowerCase();
   return videoExtensions.some(ext => lowerUrl.includes(ext));
+}
+
+// Helper function to check if URL is audio
+function isAudioUrl(url: string): boolean {
+  const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a', '.aac', '.flac'];
+  const lowerUrl = url.toLowerCase();
+  return audioExtensions.some(ext => lowerUrl.includes(ext));
 }
 
 // Video preview component with hover autoplay
@@ -184,7 +191,179 @@ function VideoPreview({
   );
 }
 
-// Audio placeholder component
+// Audio preview component with hover autoplay
+function AudioPreview({ 
+  src, 
+  thumbnailUrl,
+  isHovered 
+}: { 
+  src: string; 
+  thumbnailUrl?: string | null;
+  isHovered: boolean;
+}) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioLoaded, setAudioLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Handle audio loading
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleCanPlay = () => {
+      setAudioLoaded(true);
+    };
+
+    const handleTimeUpdate = () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgress(0);
+    };
+
+    audio.addEventListener('canplaythrough', handleCanPlay);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('canplaythrough', handleCanPlay);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [src]);
+
+  // Handle hover play/pause
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isHovered && audioLoaded) {
+      audio.currentTime = 0;
+      audio.volume = 0.3; // Lower volume for preview
+      audio.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {
+        // Autoplay might be blocked
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsPlaying(false);
+      setProgress(0);
+    }
+  }, [isHovered, audioLoaded]);
+
+  // Generate random bar heights for visualization (static when not playing)
+  const [barHeights] = useState(() => 
+    [...Array(12)].map(() => 8 + Math.random() * 24)
+  );
+
+  return (
+    <div className="w-full h-full relative">
+      <audio
+        ref={audioRef}
+        src={src}
+        preload="metadata"
+      />
+      
+      {/* Background - use thumbnail if available */}
+      {thumbnailUrl ? (
+        <img
+          src={thumbnailUrl}
+          alt="Audio thumbnail"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gold/20 via-gold/10 to-gold/5" />
+      )}
+      
+      {/* Overlay content */}
+      <div className={cn(
+        "absolute inset-0 flex flex-col items-center justify-center transition-all duration-300",
+        thumbnailUrl ? "bg-black/40" : ""
+      )}>
+        {/* Music icon with animation */}
+        <div className="relative mb-4">
+          {isPlaying && (
+            <div className="absolute inset-0 animate-ping opacity-30">
+              <Volume2 className="h-12 w-12 text-gold" />
+            </div>
+          )}
+          <div className={cn(
+            "w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300",
+            isPlaying 
+              ? "bg-gold/80 scale-110" 
+              : "bg-black/40 backdrop-blur-sm group-hover:bg-gold/60"
+          )}>
+            {isPlaying ? (
+              <Pause className="h-8 w-8 text-white fill-white" />
+            ) : (
+              <Music className="h-8 w-8 text-white" />
+            )}
+          </div>
+        </div>
+        
+        {/* Audio visualizer bars */}
+        <div className="flex items-end gap-0.5 h-8">
+          {barHeights.map((height, i) => (
+            <div
+              key={i}
+              className={cn(
+                "w-1 rounded-full transition-all duration-150",
+                isPlaying ? "bg-gold" : "bg-gold/40"
+              )}
+              style={{
+                height: isPlaying 
+                  ? `${8 + Math.sin((Date.now() / 200) + i) * 12 + Math.random() * 8}px`
+                  : `${height * 0.4}px`,
+                animationDelay: `${i * 0.05}s`,
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Progress bar */}
+        {isPlaying && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+            <div 
+              className="h-full bg-gold transition-all duration-100"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+        
+        {/* Playing indicator */}
+        {isPlaying && (
+          <div className="absolute bottom-3 right-3">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm">
+              <div className="flex gap-0.5">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-0.5 bg-gold rounded-full animate-pulse"
+                    style={{
+                      height: '10px',
+                      animationDelay: `${i * 0.15}s`,
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-white ml-1">再生中</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Audio placeholder component (static, no preview)
 function AudioThumbnail() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gold/20 to-gold/5">
@@ -227,6 +406,17 @@ export function WorkCard({ work, className }: WorkCardProps) {
       );
     }
 
+    // For audio type - use AudioPreview with hover autoplay
+    if (work.type === 'audio' && work.mediaUrl) {
+      return (
+        <AudioPreview 
+          src={work.mediaUrl} 
+          thumbnailUrl={work.thumbnailUrl}
+          isHovered={isHovered}
+        />
+      );
+    }
+
     // 1. If thumbnailUrl is set, use it
     if (work.thumbnailUrl) {
       return (
@@ -262,9 +452,20 @@ export function WorkCard({ work, className }: WorkCardProps) {
           />
         );
       }
+
+      // For audio URL (non-audio type)
+      if (isAudioUrl(work.mediaUrl)) {
+        return (
+          <AudioPreview 
+            src={work.mediaUrl} 
+            thumbnailUrl={work.thumbnailUrl}
+            isHovered={isHovered}
+          />
+        );
+      }
     }
 
-    // 3. For audio type, show audio placeholder
+    // 3. For audio type without mediaUrl, show audio placeholder
     if (work.type === 'audio') {
       return <AudioThumbnail />;
     }
@@ -332,8 +533,8 @@ export function WorkCard({ work, className }: WorkCardProps) {
             </div>
           )}
           
-          {/* Overlay on hover - only for non-video */}
-          {work.type !== 'video' && (
+          {/* Overlay on hover - only for non-video and non-audio */}
+          {work.type !== 'video' && work.type !== 'audio' && (
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           )}
         </div>
