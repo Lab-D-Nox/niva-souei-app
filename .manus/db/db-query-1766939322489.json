@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, openId, name, email, role FROM users WHERE role = 'admin' OR email LIKE '%niva%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, openId, name, email, role FROM users WHERE role = 'admin' OR email LIKE '%niva%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "9QK3CgPtYRBnRxTuykUN3k",
+      "name": "Niva",
+      "email": "hisui.noki@gmail.com",
+      "role": "admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\n1\t9QK3CgPtYRBnRxTuykUN3k\tNiva\thisui.noki@gmail.com\tadmin\n",
+  "stderr": "",
+  "execution_time_ms": 1515
+}

@@ -1,0 +1,87 @@
+{
+  "query": "SELECT id, title, type, origin, description FROM works;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, title, type, origin, description FROM works;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "幻想の森",
+      "type": "image",
+      "origin": "personal",
+      "description": "深い森の中に佇む神秘的な光景。朝霧が立ち込める中、木漏れ日が幻想的な雰囲気を演出しています。"
+    },
+    {
+      "id": "2",
+      "title": "ネオン都市",
+      "type": "image",
+      "origin": "client",
+      "description": "サイバーパンクな未来都市の夜景。ネオンライトが雨に濡れた路地を照らす。"
+    },
+    {
+      "id": "3",
+      "title": "星空の下で",
+      "type": "image",
+      "origin": "personal",
+      "description": "満天の星空の下、静かに佇む一本の木。長時間露光で捉えた星の軌跡が美しい。"
+    },
+    {
+      "id": "4",
+      "title": "アニメ風ポートレート",
+      "type": "image",
+      "origin": "client",
+      "description": "日本のアニメスタイルで描かれた少女のポートレート。繊細な表情と美しい色彩。"
+    },
+    {
+      "id": "5",
+      "title": "夢の中の旅",
+      "type": "video",
+      "origin": "personal",
+      "description": "幻想的な世界を旅するショートフィルム。AIで生成された映像美。"
+    },
+    {
+      "id": "6",
+      "title": "プロダクトPV",
+      "type": "video",
+      "origin": "client",
+      "description": "クライアント様向けに制作したプロダクト紹介動画。"
+    },
+    {
+      "id": "7",
+      "title": "Eternal Dawn",
+      "type": "audio",
+      "origin": "personal",
+      "description": "夜明けをテーマにしたオリジナル楽曲。壮大なオーケストラサウンドとエレクトロニックの融合。"
+    },
+    {
+      "id": "8",
+      "title": "Ambient Workspace",
+      "type": "audio",
+      "origin": "client",
+      "description": "作業用BGM。集中力を高める穏やかなアンビエントサウンド。"
+    },
+    {
+      "id": "9",
+      "title": "AIと創造性の未来",
+      "type": "text",
+      "origin": "personal",
+      "description": "AIがクリエイティブ産業に与える影響についての考察。"
+    },
+    {
+      "id": "10",
+      "title": "ポートフォリオサイト制作",
+      "type": "web",
+      "origin": "client",
+      "description": "クリエイター向けポートフォリオサイトのデザイン・実装。"
+    },
+    {
+      "id": "30001",
+      "title": "A",
+      "type": "image",
+      "origin": "personal",
+      "description": "AAA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\ttype\torigin\tdescription\n1\t幻想の森\timage\tpersonal\t深い森の中に佇む神秘的な光景。朝霧が立ち込める中、木漏れ日が幻想的な雰囲気を演出しています。\n2\tネオン都市\timage\tclient\tサイバーパンクな未来都市の夜景。ネオンライトが雨に濡れた路地を照らす。\n3\t星空の下で\timage\tpersonal\t満天の星空の下、静かに佇む一本の木。長時間露光で捉えた星の軌跡が美しい。\n4\tアニメ風ポートレート\timage\tclient\t日本のアニメスタイルで描かれた少女のポートレート。繊細な表情と美しい色彩。\n5\t夢の中の旅\tvideo\tpersonal\t幻想的な世界を旅するショートフィルム。AIで生成された映像美。\n6\tプロダクトPV\tvideo\tclient\tクライアント様向けに制作したプロダクト紹介動画。\n7\tEternal Dawn\taudio\tpersonal\t夜明けをテーマにしたオリジナル楽曲。壮大なオーケストラサウンドとエレクトロニックの融合。\n8\tAmbient Workspace\taudio\tclient\t作業用BGM。集中力を高める穏やかなアンビエントサウンド。\n9\tAIと創造性の未来\ttext\tpersonal\tAIがクリエイティブ産業に与える影響についての考察。\n10\tポートフォリオサイト制作\tweb\tclient\tクリエイター向けポートフォリオサイトのデザイン・実装。\n30001\tA\timage\tpersonal\tAAA\n",
+  "stderr": "",
+  "execution_time_ms": 1674
+}

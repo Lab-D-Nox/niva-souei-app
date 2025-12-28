@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, title, type, thumbnailUrl FROM works ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, title, type, thumbnailUrl FROM works ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "60004",
+      "title": "浮遊大陸 - Floating Continents",
+      "type": "image",
+      "thumbnailUrl": "/works/fantasy-landscape.png"
+    },
+    {
+      "id": "60003",
+      "title": "愛犬たちのポートレート",
+      "type": "image",
+      "thumbnailUrl": "/works/corgi-portrait.png"
+    },
+    {
+      "id": "60002",
+      "title": "AI Visual Translation",
+      "type": "image",
+      "thumbnailUrl": "/works/ai-visual-translation.png"
+    },
+    {
+      "id": "60001",
+      "title": "風信花の地球 - This Is Your Story",
+      "type": "video",
+      "thumbnailUrl": "/works/fuushinbana-earth.png"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\ttype\tthumbnailUrl\n60004\t浮遊大陸 - Floating Continents\timage\t/works/fantasy-landscape.png\n60003\t愛犬たちのポートレート\timage\t/works/corgi-portrait.png\n60002\tAI Visual Translation\timage\t/works/ai-visual-translation.png\n60001\t風信花の地球 - This Is Your Story\tvideo\t/works/fuushinbana-earth.png\n",
+  "stderr": "",
+  "execution_time_ms": 1509
+}

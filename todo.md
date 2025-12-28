@@ -104,3 +104,16 @@
 
 ## YouTubeリンク更新
 - [x] SNSリンク集ページのYouTubeリンクを https://www.youtube.com/channel/UCMaZcdLh9Fljg_4zSr2FsMA に変更
+
+## OGPメタタグの実装
+- [x] index.htmlに基本OGPメタタグを追加（og:title, og:description, og:image, og:url）
+- [x] Twitter Card用メタタグを追加
+- [x] OGP用サムネイル画像を生成
+- [ ] 作品詳細ページ用の動的OGPメタタグ対応
+
+## 実際の作品データ投稿
+- [x] Nivaの実際の作品をギャラリーに投稿
+  - 風信花の地球 - This Is Your Story（映像作品）
+  - AI Visual Translation（コンセプトアート）
+  - 愛犬たちのポートレート（コーギー）
+  - 浮遊大陸 - Floating Continents（ファンタジー風景）

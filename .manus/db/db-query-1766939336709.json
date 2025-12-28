@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT * FROM users;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "9QK3CgPtYRBnRxTuykUN3k",
+      "name": "Niva",
+      "email": "hisui.noki@gmail.com",
+      "loginMethod": "google",
+      "role": "admin",
+      "createdAt": "2025-12-26 20:34:54",
+      "updatedAt": "2025-12-28 16:25:41",
+      "lastSignedIn": "2025-12-28 16:25:42",
+      "avatar": "NULL",
+      "bio": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tloginMethod\trole\tcreatedAt\tupdatedAt\tlastSignedIn\tavatar\tbio\n1\t9QK3CgPtYRBnRxTuykUN3k\tNiva\thisui.noki@gmail.com\tgoogle\tadmin\t2025-12-26 20:34:54\t2025-12-28 16:25:41\t2025-12-28 16:25:42\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1475
+}
