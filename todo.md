@@ -231,3 +231,8 @@
 - [x] Worksページ: タイトルにアイコン追加（Palette）
 - [x] Toolsページ: タイトルにアイコン追加（Wrench）
 - [x] Contactページ: タイトルにアイコン追加（Send）
+
+## 作品カードのホバーアニメーション追加
+- [x] WorkCardコンポーネントにホバー時の浮き上がりエフェクトを追加（-translate-y-2）
+- [x] トランジションを滑らかに設定（duration-300 ease-out）
+- [x] シャドウの変化も追加して立体感を演出（shadow-xl shadow-gold/10）

@@ -46,7 +46,10 @@ export function WorkCard({ work, className }: WorkCardProps) {
     <Link href={`/works/${work.id}`}>
       <article
         className={cn(
-          "group bg-card rounded-xl overflow-hidden border border-border/50 hover-lift cursor-pointer",
+          "group bg-card rounded-xl overflow-hidden border border-border/50 cursor-pointer",
+          "transition-all duration-300 ease-out",
+          "hover:-translate-y-2 hover:shadow-xl hover:shadow-gold/10",
+          "hover:border-gold/30",
           className
         )}
       >
