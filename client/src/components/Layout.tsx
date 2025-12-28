@@ -29,12 +29,12 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#080808]/90 backdrop-blur-xl border-b border-white/5">
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-medium text-lg">
-            <span className="gradient-text font-bold">Niva's Souei</span>
+            <span className="gradient-text font-bold tracking-tight">Nivaの想映</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,10 +42,10 @@ export function Header() {
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <span
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                     location === link.href
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "text-gold bg-gold/10"
+                      : "text-foreground/70 hover:text-gold hover:bg-gold/5"
                   }`}
                 >
                   {link.label}
@@ -62,18 +62,18 @@ export function Header() {
             {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-gold/10">
+                    <Avatar className="h-9 w-9 border border-gold/30">
                       <AvatarImage src={user.avatar || undefined} alt={user.name || ""} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-gold/20 text-gold">
                         {user.name?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-card border-border">
                   <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-sm font-medium text-foreground">{user.name}</p>
                     <p className="text-xs text-muted-foreground">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
@@ -105,7 +105,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild variant="default" size="sm">
+              <Button asChild size="sm" className="bg-gold hover:bg-gold/90 text-gold-foreground">
                 <a href={getLoginUrl()}>ログイン</a>
               </Button>
             )}
@@ -114,7 +114,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden hover:bg-gold/10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -124,7 +124,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-border/50">
+          <nav className="md:hidden py-4 border-t border-white/5">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
@@ -133,10 +133,10 @@ export function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <span
-                    className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                       location === link.href
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        ? "text-gold bg-gold/10"
+                        : "text-foreground/70 hover:text-gold hover:bg-gold/5"
                     }`}
                   >
                     {link.label}
@@ -153,39 +153,40 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="bg-foreground text-background py-12">
+    <footer className="bg-[#050505] text-foreground py-16 border-t border-white/5">
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="text-xl font-bold mb-4">Niva's Souei</h3>
-            <p className="text-background/70 text-sm leading-relaxed max-w-md">
-              想いを映像に翻訳する。AIを活用したクリエイティブ表現で、
+            <h3 className="text-xl font-bold mb-4 gradient-text">Nivaの想映</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
+              音・映像・物語の「同期」。その一点が、心に波紋をつくる。
+              AIを活用したワンストップ・クリエイションで、
               あなたの「伝えたい」を形にします。
             </p>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="font-medium mb-4">コンテンツ</h4>
-            <ul className="space-y-2 text-sm text-background/70">
+            <h4 className="font-medium mb-4 text-gold">コンテンツ</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/works" className="hover:text-background transition-colors">
+                <Link href="/works" className="hover:text-gold transition-colors">
                   作品一覧
                 </Link>
               </li>
               <li>
-                <Link href="/philosophy" className="hover:text-background transition-colors">
+                <Link href="/philosophy" className="hover:text-gold transition-colors">
                   Nivaの想映
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-background transition-colors">
+                <Link href="/services" className="hover:text-gold transition-colors">
                   サービス
                 </Link>
               </li>
               <li>
-                <Link href="/tools" className="hover:text-background transition-colors">
+                <Link href="/tools" className="hover:text-gold transition-colors">
                   使用ツール
                 </Link>
               </li>
@@ -194,15 +195,15 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-medium mb-4">お問い合わせ</h4>
-            <ul className="space-y-2 text-sm text-background/70">
+            <h4 className="font-medium mb-4 text-gold">お問い合わせ</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/contact" className="hover:text-background transition-colors">
+                <Link href="/contact" className="hover:text-gold transition-colors">
                   依頼フォーム
                 </Link>
               </li>
               <li>
-                <Link href="/links" className="hover:text-background transition-colors">
+                <Link href="/links" className="hover:text-gold transition-colors">
                   SNSリンク
                 </Link>
               </li>
@@ -210,8 +211,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-background/20 mt-8 pt-8 text-center text-sm text-background/50">
-          <p>© {new Date().getFullYear()} Niva's Souei. All rights reserved.</p>
+        <div className="border-t border-white/5 mt-12 pt-8 text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Nivaの想映. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -224,7 +225,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1 pt-16">{children}</main>
       <Footer />

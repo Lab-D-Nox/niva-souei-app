@@ -210,11 +210,13 @@ export default function Contact() {
         <div className="container">
           {/* Header */}
           <div className="text-center mb-12">
-            <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase mb-2">
-              Contact
+            <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
+              Request
             </p>
-            <h1 className="text-3xl md:text-4xl font-light text-primary mb-4">依頼・お問い合わせ</h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light gradient-text mb-6">
+              あなたの「想い」を、聴かせてください。
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               プロジェクトのご相談、お見積もりなど、お気軽にお問い合わせください。
               フォームに記入後、公式LINEでやり取りを進めます。
             </p>
@@ -242,7 +244,7 @@ export default function Contact() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Hearing Sheet Generator */}
-            <div className="bg-card rounded-xl p-6 border border-border/50 h-fit">
+            <div className="glass-card p-6 h-fit">
               <h2 className="text-xl font-medium mb-4 flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
                 簡易ヒアリングシート
@@ -314,7 +316,7 @@ export default function Contact() {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-card rounded-xl p-6 border border-border/50">
+            <div className="glass-card p-6">
               <h2 className="text-xl font-medium mb-6">お問い合わせフォーム</h2>
 
               <div className="space-y-6">
