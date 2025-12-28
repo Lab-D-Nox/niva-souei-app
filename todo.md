@@ -320,3 +320,12 @@
 - [x] LoadingScreenコンポーネントを実際の読み込み完了と連動するように修正
 - [x] 最小表示時間（1.5秒）を設定
 - [x] 動作確認
+
+## PWA（Progressive Web App）機能の実装
+- [x] manifest.jsonを作成（standalone表示、テーマカラー#F4F8FA）
+- [x] PWA用アイコン（192x192、512x512）を準備
+- [x] index.htmlにmeta/linkタグを追加（Android/iOS対応）
+- [x] service-worker.jsを作成（オフラインキャッシュ対応）
+- [x] Service Workerを登録するコードを追加
+- [x] viewportでズーム無効化（user-scalable=no）
+- [x] 動作確認
