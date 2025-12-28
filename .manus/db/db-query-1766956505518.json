@@ -1,0 +1,28 @@
+{
+  "query": "SELECT DISTINCT category FROM tools ORDER BY category;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT DISTINCT category FROM tools ORDER BY category;",
+  "rows": [
+    {
+      "category": "audio"
+    },
+    {
+      "category": "coding"
+    },
+    {
+      "category": "editing"
+    },
+    {
+      "category": "image"
+    },
+    {
+      "category": "text"
+    },
+    {
+      "category": "video"
+    }
+  ],
+  "messages": [],
+  "stdout": "category\naudio\ncoding\nediting\nimage\ntext\nvideo\n",
+  "stderr": "",
+  "execution_time_ms": 1526
+}

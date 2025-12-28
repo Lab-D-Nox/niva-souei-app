@@ -360,7 +360,7 @@ export async function createTool(data: InsertTool) {
 export async function getAllTools() {
   const db = await getDb();
   if (!db) return [];
-  return await db.select().from(tools).where(eq(tools.isActive, true)).orderBy(asc(tools.name));
+  return await db.select().from(tools).where(eq(tools.isActive, true)).orderBy(asc(tools.category), asc(tools.name));
 }
 
 export async function getToolsByWorkId(workId: number) {

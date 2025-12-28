@@ -587,25 +587,71 @@ export default function WorkEdit() {
             {toolsData && toolsData.length > 0 && (
               <div className="bg-card rounded-xl p-6 border border-border/50">
                 <h2 className="text-lg font-medium mb-4">使用ツール</h2>
-                <div className="flex flex-wrap gap-2">
-                  {toolsData.map((tool: any) => (
-                    <Badge
-                      key={tool.id}
-                      variant={selectedTools.includes(tool.id) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => handleToggleTool(tool.id)}
-                    >
-                      {tool.iconUrl && (
-                        <img
-                          src={tool.iconUrl}
-                          alt=""
-                          className="w-4 h-4 mr-1"
-                        />
-                      )}
-                      {tool.name}
-                    </Badge>
-                  ))}
-                </div>
+                <p className="text-sm text-muted-foreground mb-4">この作品の制作に使用したAIツールを選択してください</p>
+                
+                {/* カテゴリー別にグループ化 */}
+                {(() => {
+                  // カテゴリー名の日本語マッピング
+                  const categoryLabels: Record<string, string> = {
+                    'text': 'テキスト生成',
+                    'image': '画像生成',
+                    'video': '動画生成',
+                    'audio': '音声・音楽生成',
+                    'code': 'コード・開発',
+                    'other': 'その他',
+                    '': '未分類',
+                  };
+                  
+                  // カテゴリー順序
+                  const categoryOrder = ['text', 'image', 'video', 'audio', 'code', 'other', ''];
+                  
+                  // ツールをカテゴリー別にグループ化
+                  const groupedTools = toolsData.reduce((acc: Record<string, any[]>, tool: any) => {
+                    const category = tool.category || '';
+                    if (!acc[category]) acc[category] = [];
+                    acc[category].push(tool);
+                    return acc;
+                  }, {} as Record<string, any[]>);
+                  
+                  // カテゴリー順にソート
+                  const sortedCategories = Object.keys(groupedTools).sort((a, b) => {
+                    const indexA = categoryOrder.indexOf(a);
+                    const indexB = categoryOrder.indexOf(b);
+                    return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+                  });
+                  
+                  return (
+                    <div className="space-y-6">
+                      {sortedCategories.map((category) => (
+                        <div key={category || 'uncategorized'}>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-gold"></span>
+                            {categoryLabels[category] || category || '未分類'}
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {groupedTools[category].map((tool: any) => (
+                              <Badge
+                                key={tool.id}
+                                variant={selectedTools.includes(tool.id) ? "default" : "outline"}
+                                className="cursor-pointer transition-all hover:scale-105"
+                                onClick={() => handleToggleTool(tool.id)}
+                              >
+                                {tool.iconUrl && (
+                                  <img
+                                    src={tool.iconUrl}
+                                    alt=""
+                                    className="w-4 h-4 mr-1"
+                                  />
+                                )}
+                                {tool.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
