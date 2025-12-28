@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE tools SET name = 'GPT-1.5' WHERE name = 'GPT-4o';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute UPDATE tools SET name = 'GPT-1.5' WHERE name = 'GPT-4o';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1502
+}
