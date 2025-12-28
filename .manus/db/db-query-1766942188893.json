@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Google Imagen 4', 'Google DeepMindの最新画像生成AI。高品質でフォトリアリスティックな画像生成が可能。', 'https://deepmind.google/technologies/imagen', 'image', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Google Imagen 4', 'Google DeepMindの最新画像生成AI。高品質でフォトリアリスティックな画像生成が可能。', 'https://deepmind.google/technologies/imagen', 'image', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1537
+}

@@ -132,3 +132,6 @@
 
 ## 音声ツールの追加
 - [x] 音声・音楽カテゴリにGoogle AI Studio、CoeFont、Producer.AIを追加
+
+## 画像生成ツールの追加（追加）
+- [x] 画像生成カテゴリにGoogle Imagen 4を追加
