@@ -87,3 +87,4 @@
 - [x] InstagramリンクをNivaの実際のアカウントに更新
 - [x] XリンクをNivaの実際のアカウントに更新
 - [x] TikTokリンクをNivaの実際のアカウントに更新
+- [x] FacebookリンクをNivaの実際のアカウントに更新
