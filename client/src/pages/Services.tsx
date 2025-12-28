@@ -329,9 +329,10 @@ export default function Services() {
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4">
+            {/* Desktop: 3 steps in a row with arrows between */}
+            <div className="hidden md:flex items-start justify-center gap-4">
               {/* Step 1 */}
-              <div className="glass-card p-6 text-center relative">
+              <div className="glass-card p-6 text-center relative flex-1 max-w-[250px]">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
                   Step 1
                 </div>
@@ -343,13 +344,13 @@ export default function Services() {
                 <p className="text-sm text-[#5A6B75]">ブランドの想いを<br />「リズム・音」に変換</p>
               </div>
               
-              {/* Arrow */}
-              <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="h-8 w-8 text-gold/30" />
+              {/* Arrow 1 */}
+              <div className="flex items-center justify-center pt-16">
+                <ArrowRight className="h-8 w-8 text-gold/50" />
               </div>
               
               {/* Step 2 */}
-              <div className="glass-card p-6 text-center relative md:col-start-2">
+              <div className="glass-card p-6 text-center relative flex-1 max-w-[250px]">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
                   Step 2
                 </div>
@@ -361,13 +362,13 @@ export default function Services() {
                 <p className="text-sm text-[#5A6B75]">0.1秒単位で<br />映像と物語を同期</p>
               </div>
               
-              {/* Arrow */}
-              <div className="hidden md:flex items-center justify-center md:col-start-3 md:row-start-1">
-                <ArrowRight className="h-8 w-8 text-gold/30 md:hidden" />
+              {/* Arrow 2 */}
+              <div className="flex items-center justify-center pt-16">
+                <ArrowRight className="h-8 w-8 text-gold/50" />
               </div>
               
               {/* Step 3 */}
-              <div className="glass-card p-6 text-center relative md:col-start-3">
+              <div className="glass-card p-6 text-center relative flex-1 max-w-[250px]">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
                   Step 3
                 </div>
@@ -384,9 +385,58 @@ export default function Services() {
               </div>
             </div>
             
-            {/* Mobile arrows */}
-            <div className="flex md:hidden justify-center my-4">
-              <ChevronDown className="h-6 w-6 text-gold/30" />
+            {/* Mobile: Vertical stack with down arrows */}
+            <div className="md:hidden space-y-4">
+              {/* Step 1 */}
+              <div className="glass-card p-6 text-center relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
+                  Step 1
+                </div>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center">
+                  <Music className="h-8 w-8 text-gold" />
+                </div>
+                <h3 className="text-xl font-serif text-[#2B3A42] mb-2">Sound</h3>
+                <p className="text-sm text-gold mb-2">源流</p>
+                <p className="text-sm text-[#5A6B75]">ブランドの想いを<br />「リズム・音」に変換</p>
+              </div>
+              
+              <div className="flex justify-center">
+                <ChevronDown className="h-6 w-6 text-gold/50" />
+              </div>
+              
+              {/* Step 2 */}
+              <div className="glass-card p-6 text-center relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
+                  Step 2
+                </div>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#5B8A9A]/20 to-[#5B8A9A]/5 flex items-center justify-center">
+                  <RefreshCw className="h-8 w-8 text-[#5B8A9A]" />
+                </div>
+                <h3 className="text-xl font-serif text-[#2B3A42] mb-2">Sync</h3>
+                <p className="text-sm text-[#5B8A9A] mb-2">同期</p>
+                <p className="text-sm text-[#5A6B75]">0.1秒単位で<br />映像と物語を同期</p>
+              </div>
+              
+              <div className="flex justify-center">
+                <ChevronDown className="h-6 w-6 text-gold/50" />
+              </div>
+              
+              {/* Step 3 */}
+              <div className="glass-card p-6 text-center relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-3 py-1 rounded-full">
+                  Step 3
+                </div>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#7A9E7E]/20 to-[#7A9E7E]/5 flex items-center justify-center">
+                  <svg className="h-8 w-8 text-[#7A9E7E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <circle cx="12" cy="12" r="6" opacity="0.5" />
+                    <circle cx="12" cy="12" r="9" opacity="0.25" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-serif text-[#2B3A42] mb-2">Ripple</h3>
+                <p className="text-sm text-[#7A9E7E] mb-2">波紋</p>
+                <p className="text-sm text-[#5A6B75]">視聴者の心に<br />深い没入を生む</p>
+              </div>
             </div>
           </div>
         </div>
