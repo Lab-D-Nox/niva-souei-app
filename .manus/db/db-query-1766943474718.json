@@ -1,0 +1,155 @@
+{
+  "query": "SELECT id, name, category FROM tools WHERE iconUrl IS NULL OR iconUrl = '' ORDER BY category, name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, name, category FROM tools WHERE iconUrl IS NULL OR iconUrl = '' ORDER BY category, name;",
+  "rows": [
+    {
+      "id": "30041",
+      "name": "CoeFont",
+      "category": "audio"
+    },
+    {
+      "id": "30040",
+      "name": "Google AI Studio",
+      "category": "audio"
+    },
+    {
+      "id": "30042",
+      "name": "Producer.AI",
+      "category": "audio"
+    },
+    {
+      "id": "30046",
+      "name": "Antigravity",
+      "category": "coding"
+    },
+    {
+      "id": "30047",
+      "name": "Codex",
+      "category": "coding"
+    },
+    {
+      "id": "30019",
+      "name": "Finalframe",
+      "category": "editing"
+    },
+    {
+      "id": "30017",
+      "name": "Gigapixel",
+      "category": "editing"
+    },
+    {
+      "id": "30018",
+      "name": "Tracejourney",
+      "category": "editing"
+    },
+    {
+      "id": "30011",
+      "name": "Dremina",
+      "category": "image"
+    },
+    {
+      "id": "30043",
+      "name": "Google Imagen 4",
+      "category": "image"
+    },
+    {
+      "id": "30001",
+      "name": "GPT-1.5",
+      "category": "image"
+    },
+    {
+      "id": "30010",
+      "name": "Lovart",
+      "category": "image"
+    },
+    {
+      "id": "30004",
+      "name": "Mystic",
+      "category": "image"
+    },
+    {
+      "id": "30005",
+      "name": "NanobananaPro",
+      "category": "image"
+    },
+    {
+      "id": "30006",
+      "name": "Reve",
+      "category": "image"
+    },
+    {
+      "id": "30002",
+      "name": "Seedream",
+      "category": "image"
+    },
+    {
+      "id": "30007",
+      "name": "Z-image",
+      "category": "image"
+    },
+    {
+      "id": "30027",
+      "name": "Domo.AI",
+      "category": "video"
+    },
+    {
+      "id": "30033",
+      "name": "dora.studio",
+      "category": "video"
+    },
+    {
+      "id": "30023",
+      "name": "Flova.AI",
+      "category": "video"
+    },
+    {
+      "id": "30021",
+      "name": "FLOW",
+      "category": "video"
+    },
+    {
+      "id": "30039",
+      "name": "Grok Video",
+      "category": "video"
+    },
+    {
+      "id": "30026",
+      "name": "Higgsfield",
+      "category": "video"
+    },
+    {
+      "id": "30037",
+      "name": "No Lang",
+      "category": "video"
+    },
+    {
+      "id": "30031",
+      "name": "Seedance",
+      "category": "video"
+    },
+    {
+      "id": "30034",
+      "name": "sousaku AI",
+      "category": "video"
+    },
+    {
+      "id": "30036",
+      "name": "Synthesia",
+      "category": "video"
+    },
+    {
+      "id": "30029",
+      "name": "Vidu",
+      "category": "video"
+    },
+    {
+      "id": "30030",
+      "name": "Wan",
+      "category": "video"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory\n30041\tCoeFont\taudio\n30040\tGoogle AI Studio\taudio\n30042\tProducer.AI\taudio\n30046\tAntigravity\tcoding\n30047\tCodex\tcoding\n30019\tFinalframe\tediting\n30017\tGigapixel\tediting\n30018\tTracejourney\tediting\n30011\tDremina\timage\n30043\tGoogle Imagen 4\timage\n30001\tGPT-1.5\timage\n30010\tLovart\timage\n30004\tMystic\timage\n30005\tNanobananaPro\timage\n30006\tReve\timage\n30002\tSeedream\timage\n30007\tZ-image\timage\n30027\tDomo.AI\tvideo\n30033\tdora.studio\tvideo\n30023\tFlova.AI\tvideo\n30021\tFLOW\tvideo\n30039\tGrok Video\tvideo\n30026\tHiggsfield\tvideo\n30037\tNo Lang\tvideo\n30031\tSeedance\tvideo\n30034\tsousaku AI\tvideo\n30036\tSynthesia\tvideo\n30029\tVidu\tvideo\n30030\tWan\tvideo\n",
+  "stderr": "",
+  "execution_time_ms": 1602
+}

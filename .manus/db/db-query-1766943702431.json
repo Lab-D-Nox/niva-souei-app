@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, category FROM tools WHERE iconUrl IS NULL OR iconUrl = '' ORDER BY category, name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, name, category FROM tools WHERE iconUrl IS NULL OR iconUrl = '' ORDER BY category, name;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "GPT-1.5",
+      "category": "image"
+    },
+    {
+      "id": "30007",
+      "name": "Z-image",
+      "category": "image"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory\n30001\tGPT-1.5\timage\n30007\tZ-image\timage\n",
+  "stderr": "",
+  "execution_time_ms": 1559
+}
