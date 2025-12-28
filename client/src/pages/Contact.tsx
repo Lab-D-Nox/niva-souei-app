@@ -20,7 +20,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { Loader2, Send, Sparkles, Copy, CheckCircle } from "lucide-react";
+import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink } from "lucide-react";
+
+const LINE_URL = "https://lin.ee/H5pfvuh";
 
 const inquiryTypeOptions = [
   { value: "spot", label: "Spot Concept（スポット現像）" },
@@ -61,31 +63,18 @@ const hearingQuestions = [
 export default function Contact() {
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [inquiryType, setInquiryType] = useState("other");
   const [message, setMessage] = useState("");
   const [budget, setBudget] = useState("");
   const [deadline, setDeadline] = useState("");
   const [referenceUrls, setReferenceUrls] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Hearing sheet state
   const [hearingAnswers, setHearingAnswers] = useState<Record<string, string[]>>({});
   const [hearingTexts, setHearingTexts] = useState<Record<string, string>>({});
   const [generatedSheet, setGeneratedSheet] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-
-  const createInquiryMutation = trpc.inquiries.create.useMutation({
-    onSuccess: () => {
-      setIsSubmitted(true);
-      toast.success("お問い合わせを送信しました");
-    },
-    onError: (err) => {
-      toast.error(err.message || "送信に失敗しました");
-    },
-  });
 
   const generateHearingMutation = trpc.inquiries.generateHearingSheet.useMutation({
     onSuccess: (data) => {
@@ -131,65 +120,89 @@ export default function Contact() {
     }
   };
 
-  const copyGeneratedSheet = async () => {
-    await navigator.clipboard.writeText(generatedSheet);
-    toast.success("クリップボードにコピーしました");
-  };
-
-  const applyGeneratedSheet = () => {
-    // generatedSheet is already bound to the hearing sheet textarea
-    // This function just shows a confirmation toast
-    toast.success("ヒアリングシート欄に反映しました");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Generate formatted content for LINE
+  const generateFormattedContent = () => {
+    const inquiryTypeLabel = inquiryTypeOptions.find((o) => o.value === inquiryType)?.label || "その他";
     
-    if (!name.trim() || !email.trim() || !message.trim()) {
-      toast.error("必須項目を入力してください");
+    let content = `【Niva's Souei お問い合わせ】\n\n`;
+    content += `━━━━━━━━━━━━━━━━\n`;
+    content += `■ 基本情報\n`;
+    content += `━━━━━━━━━━━━━━━━\n`;
+    if (name.trim()) content += `お名前: ${name.trim()}\n`;
+    if (companyName.trim()) content += `会社名: ${companyName.trim()}\n`;
+    content += `ご依頼の種類: ${inquiryTypeLabel}\n`;
+    if (budget.trim()) content += `ご予算: ${budget.trim()}\n`;
+    if (deadline.trim()) content += `希望納期: ${deadline.trim()}\n`;
+    if (referenceUrls.trim()) content += `参考URL: ${referenceUrls.trim()}\n`;
+    
+    if (message.trim()) {
+      content += `\n━━━━━━━━━━━━━━━━\n`;
+      content += `■ ご依頼内容\n`;
+      content += `━━━━━━━━━━━━━━━━\n`;
+      content += `${message.trim()}\n`;
+    }
+    
+    if (generatedSheet.trim()) {
+      content += `\n━━━━━━━━━━━━━━━━\n`;
+      content += `■ ヒアリングシート\n`;
+      content += `━━━━━━━━━━━━━━━━\n`;
+      content += `${generatedSheet.trim()}\n`;
+    }
+    
+    content += `\n━━━━━━━━━━━━━━━━\n`;
+    content += `※このメッセージはNiva's Soueiのお問い合わせフォームから生成されました`;
+    
+    return content;
+  };
+
+  const copyAndOpenLINE = async () => {
+    if (!name.trim()) {
+      toast.error("お名前を入力してください");
+      return;
+    }
+    if (!message.trim()) {
+      toast.error("ご依頼内容を入力してください");
       return;
     }
 
-    setIsSubmitting(true);
+    const content = generateFormattedContent();
+    
     try {
-      await createInquiryMutation.mutateAsync({
-        name: name.trim(),
-        companyName: companyName.trim() || undefined,
-        email: email.trim(),
-        phone: phone.trim() || undefined,
-        inquiryType: inquiryType as any,
-        message: message.trim(),
-        budget: budget.trim() || undefined,
-        deadline: deadline.trim() || undefined,
-        referenceUrls: referenceUrls.trim() || undefined,
-        hearingSheetData: Object.keys(hearingAnswers).length > 0 ? { answers: hearingAnswers, texts: hearingTexts } : undefined,
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      toast.success("内容をコピーしました！LINEに貼り付けてください", {
+        duration: 5000,
       });
-    } finally {
-      setIsSubmitting(false);
+      
+      // Open LINE after a short delay
+      setTimeout(() => {
+        window.open(LINE_URL, "_blank");
+      }, 500);
+    } catch (err) {
+      toast.error("コピーに失敗しました");
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <Layout>
-        <div className="section">
-          <div className="container max-w-2xl text-center">
-            <div className="bg-card rounded-xl p-12 border border-border/50">
-              <CheckCircle className="h-16 w-16 mx-auto mb-6 text-green-500" />
-              <h1 className="text-2xl font-medium mb-4">送信完了</h1>
-              <p className="text-muted-foreground mb-6">
-                お問い合わせありがとうございます。
-                内容を確認の上、折り返しご連絡いたします。
-              </p>
-              <Button onClick={() => setIsSubmitted(false)} variant="outline">
-                新しいお問い合わせ
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const copyContentOnly = async () => {
+    if (!name.trim()) {
+      toast.error("お名前を入力してください");
+      return;
+    }
+    if (!message.trim()) {
+      toast.error("ご依頼内容を入力してください");
+      return;
+    }
+
+    const content = generateFormattedContent();
+    
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      toast.success("内容をコピーしました");
+    } catch (err) {
+      toast.error("コピーに失敗しました");
+    }
+  };
 
   return (
     <Layout>
@@ -203,8 +216,28 @@ export default function Contact() {
             <h1 className="text-3xl md:text-4xl font-light text-primary mb-4">依頼・お問い合わせ</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               プロジェクトのご相談、お見積もりなど、お気軽にお問い合わせください。
-              簡易ヒアリングシートを使って、ご要望を整理することもできます。
+              フォームに記入後、公式LINEでやり取りを進めます。
             </p>
+          </div>
+
+          {/* LINE Guide Banner */}
+          <div className="max-w-5xl mx-auto mb-8">
+            <div className="bg-[#06C755]/10 border border-[#06C755]/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-[#06C755] rounded-full p-3 shrink-0">
+                  <MessageCircle className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg mb-2">お問い合わせの流れ</h3>
+                  <ol className="text-sm text-muted-foreground space-y-1">
+                    <li>1. 下記フォームにご依頼内容を記入</li>
+                    <li>2. 「内容をコピーしてLINEで送る」ボタンをクリック</li>
+                    <li>3. 公式LINEが開くので、コピーした内容を貼り付けて送信</li>
+                    <li>4. LINE上でやり取りを進めます</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -273,15 +306,9 @@ export default function Contact() {
                   <div className="bg-muted rounded-lg p-4 text-sm whitespace-pre-wrap max-h-64 overflow-y-auto">
                     {generatedSheet}
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={copyGeneratedSheet}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      コピー
-                    </Button>
-                    <Button variant="default" size="sm" onClick={applyGeneratedSheet}>
-                      フォームに反映
-                    </Button>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    ※ 生成されたヒアリングシートは、お問い合わせ内容と一緒にLINEに送信されます
+                  </p>
                 </div>
               )}
             </div>
@@ -290,7 +317,7 @@ export default function Contact() {
             <div className="bg-card rounded-xl p-6 border border-border/50">
               <h2 className="text-xl font-medium mb-6">お問い合わせフォーム</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name" className="mb-2 block">
@@ -311,32 +338,6 @@ export default function Contact() {
                       id="company"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="email" className="mb-2 block">
-                      メールアドレス <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone" className="mb-2 block">
-                      電話番号
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
                 </div>
@@ -408,33 +409,57 @@ export default function Contact() {
                   />
                 </div>
 
-                {/* Hearing Sheet Section */}
-                <div>
-                  <Label htmlFor="hearingSheet" className="mb-2 block">
-                    ヒアリングシート
-                  </Label>
-                  <Textarea
-                    id="hearingSheet"
-                    value={generatedSheet}
-                    onChange={(e) => setGeneratedSheet(e.target.value)}
-                    placeholder="左側の簡易ヒアリングシートで生成した内容がここに表示されます"
-                    rows={4}
-                    className="bg-muted/50"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    左側の「ヒアリングシートを生成」ボタンで作成し、「フォームに反映」ボタンでここに貼り付けできます
-                  </p>
-                </div>
+                {/* Hearing Sheet Preview */}
+                {generatedSheet && (
+                  <div>
+                    <Label className="mb-2 block">ヒアリングシート（自動添付）</Label>
+                    <div className="bg-muted/50 rounded-lg p-3 text-sm text-muted-foreground max-h-32 overflow-y-auto">
+                      {generatedSheet.substring(0, 200)}...
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ※ 左側で生成したヒアリングシートが自動的に添付されます
+                    </p>
+                  </div>
+                )}
 
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-4">
+                  <Button 
+                    onClick={copyAndOpenLINE} 
+                    className="w-full bg-[#06C755] hover:bg-[#05a847] text-white"
+                    size="lg"
+                  >
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    内容をコピーしてLINEで送る
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </Button>
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={copyContentOnly}
+                      className="flex-1"
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      内容をコピーのみ
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => window.open(LINE_URL, "_blank")}
+                      className="flex-1"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      LINEを開く
+                    </Button>
+                  </div>
+
+                  {isCopied && (
+                    <p className="text-sm text-center text-green-600">
+                      ✓ 内容がコピーされました。LINEに貼り付けて送信してください。
+                    </p>
                   )}
-                  送信する
-                </Button>
-              </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
