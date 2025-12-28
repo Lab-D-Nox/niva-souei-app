@@ -129,3 +129,6 @@
 
 ## 動画生成ツールの追加
 - [x] 動画生成カテゴリにFLOW、Runway、Kling、Flova.AI、Luma、Hailuo、Higgsfield、Domo.AI、Sora、Grok Video、Vidu、Wan、Seedance、PixVerse、dora.studio、sousaku AI、HeyGen、Synthesia、No Lang、Veoを追加
+
+## 音声ツールの追加
+- [x] 音声・音楽カテゴリにGoogle AI Studio、CoeFont、Producer.AIを追加

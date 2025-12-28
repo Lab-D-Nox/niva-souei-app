@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Google AI Studio', 'Googleの音声合成・音声認識AI。高品質な音声生成が可能。', 'https://aistudio.google.com', 'audio', true, NOW()),\n('CoeFont', '日本発のAI音声合成サービス。自然な日本語音声生成に特化。', 'https://coefont.cloud', 'audio', true, NOW()),\n('Producer.AI', 'AI音楽制作ツール。楽曲制作をサポート。', NULL, 'audio', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Google AI Studio', 'Googleの音声合成・音声認識AI。高品質な音声生成が可能。', 'https://aistudio.google.com', 'audio', true, NOW()),\n('CoeFont', '日本発のAI音声合成サービス。自然な日本語音声生成に特化。', 'https://coefont.cloud', 'audio', true, NOW()),\n('Producer.AI', 'AI音楽制作ツール。楽曲制作をサポート。', NULL, 'audio', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1686
+}
