@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -48,6 +48,32 @@ function Router() {
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isContentReady, setIsContentReady] = useState(false);
+
+  // コンテンツの読み込み完了を検知
+  useEffect(() => {
+    // DOMContentLoadedとwindow.loadの両方を監視
+    const checkReadyState = () => {
+      if (document.readyState === 'complete') {
+        setIsContentReady(true);
+      }
+    };
+
+    // 既に読み込み完了している場合
+    if (document.readyState === 'complete') {
+      setIsContentReady(true);
+      return;
+    }
+
+    // まだ読み込み中の場合はイベントリスナーを設定
+    window.addEventListener('load', checkReadyState);
+    document.addEventListener('readystatechange', checkReadyState);
+
+    return () => {
+      window.removeEventListener('load', checkReadyState);
+      document.removeEventListener('readystatechange', checkReadyState);
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -55,7 +81,8 @@ function App() {
         {isLoading && (
           <LoadingScreen
             onLoadingComplete={() => setIsLoading(false)}
-            minDisplayTime={2500}
+            minDisplayTime={1500}
+            isContentReady={isContentReady}
           />
         )}
         <ClickRippleProvider>

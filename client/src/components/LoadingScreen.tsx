@@ -1,25 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface LoadingScreenProps {
   onLoadingComplete?: () => void;
-  minDisplayTime?: number;
+  minDisplayTime?: number; // アニメーションが見える最小時間
+  isContentReady?: boolean; // コンテンツの読み込み完了フラグ
 }
 
-export function LoadingScreen({ onLoadingComplete, minDisplayTime = 2000 }: LoadingScreenProps) {
+export function LoadingScreen({ 
+  onLoadingComplete, 
+  minDisplayTime = 1500, // 最小1.5秒（アニメーションが見える程度）
+  isContentReady = false 
+}: LoadingScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
+  // 最小表示時間が経過したらフラグを立てる
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsFading(true);
-      setTimeout(() => {
-        setIsVisible(false);
-        onLoadingComplete?.();
-      }, 500); // フェードアウト時間
+      setMinTimeElapsed(true);
     }, minDisplayTime);
 
     return () => clearTimeout(timer);
-  }, [minDisplayTime, onLoadingComplete]);
+  }, [minDisplayTime]);
+
+  // フェードアウト処理
+  const fadeOut = useCallback(() => {
+    setIsFading(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onLoadingComplete?.();
+    }, 500); // フェードアウト時間
+  }, [onLoadingComplete]);
+
+  // 最小時間経過 AND コンテンツ準備完了 でフェードアウト
+  useEffect(() => {
+    if (minTimeElapsed && isContentReady) {
+      fadeOut();
+    }
+  }, [minTimeElapsed, isContentReady, fadeOut]);
 
   if (!isVisible) return null;
 
