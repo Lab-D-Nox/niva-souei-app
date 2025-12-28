@@ -1,6 +1,6 @@
 import { Link } from "wouter";
-import { useState, useRef, useEffect } from "react";
-import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause, VolumeX, Volume1, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause, VolumeX, Volume1, AlertCircle, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -93,6 +93,49 @@ function LoadingSpinner({ type }: { type: 'video' | 'audio' }) {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Error display component with retry button
+function ErrorDisplay({ 
+  type, 
+  onRetry 
+}: { 
+  type: 'video' | 'audio'; 
+  onRetry: () => void;
+}) {
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-3 p-4">
+        {/* Error icon */}
+        <div className="w-14 h-14 rounded-full bg-red-500/20 flex items-center justify-center">
+          <AlertCircle className="h-7 w-7 text-red-400" />
+        </div>
+        
+        {/* Error message */}
+        <div className="text-center">
+          <p className="text-sm text-white/90 font-medium mb-1">
+            {type === 'video' ? '動画' : '音声'}の読み込みに失敗しました
+          </p>
+          <p className="text-xs text-white/60">
+            ネットワーク接続を確認してください
+          </p>
+        </div>
+        
+        {/* Retry button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onRetry();
+          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/90 hover:bg-gold text-white text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+        >
+          <RotateCcw className="h-4 w-4" />
+          再試行
+        </button>
       </div>
     </div>
   );
@@ -203,6 +246,20 @@ function VideoPreview({
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.3);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Reset and retry loading
+  const handleRetry = useCallback(() => {
+    setError(false);
+    setVideoLoaded(false);
+    setIsLoading(true);
+    setRetryCount(prev => prev + 1);
+    
+    const video = videoRef.current;
+    if (video) {
+      video.load();
+    }
+  }, []);
 
   // Extract first frame for thumbnail if no thumbnailUrl provided
   useEffect(() => {
@@ -216,6 +273,7 @@ function VideoPreview({
     const handleLoadedData = () => {
       video.currentTime = 0.1;
       setVideoLoaded(true);
+      setIsLoading(false);
     };
 
     const handleSeeked = () => {
@@ -240,21 +298,33 @@ function VideoPreview({
       setIsLoading(false);
     };
 
+    const handleWaiting = () => {
+      setIsLoading(true);
+    };
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+    };
+
     video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('seeked', handleSeeked);
     video.addEventListener('error', handleError);
+    video.addEventListener('waiting', handleWaiting);
+    video.addEventListener('canplay', handleCanPlay);
 
     return () => {
       video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('seeked', handleSeeked);
       video.removeEventListener('error', handleError);
+      video.removeEventListener('waiting', handleWaiting);
+      video.removeEventListener('canplay', handleCanPlay);
     };
-  }, [src, thumbnailUrl, thumbnail]);
+  }, [src, thumbnailUrl, thumbnail, retryCount]);
 
   // Handle hover play/pause with loading state
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || error) return;
 
     if (isHovered) {
       // Show loading if video is not ready yet
@@ -267,8 +337,11 @@ function VideoPreview({
         video.currentTime = 0;
         video.muted = isMuted;
         video.volume = volume;
-        video.play().catch(() => {
-          // Autoplay might be blocked, ignore error
+        video.play().catch((e) => {
+          // Check if it's a real error or just autoplay blocked
+          if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') {
+            setError(true);
+          }
         });
       }
     } else {
@@ -276,7 +349,7 @@ function VideoPreview({
       video.pause();
       video.currentTime = 0;
     }
-  }, [isHovered, videoLoaded]);
+  }, [isHovered, videoLoaded, error]);
 
   // When video becomes loaded while hovering, hide loading
   useEffect(() => {
@@ -304,14 +377,6 @@ function VideoPreview({
     setIsMuted(!isMuted);
   };
 
-  if (error) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted">
-        <Play className="h-12 w-12" />
-      </div>
-    );
-  }
-
   return (
     <>
       <video
@@ -319,7 +384,7 @@ function VideoPreview({
         src={src}
         className={cn(
           "w-full h-full object-cover transition-opacity duration-300",
-          isHovered && videoLoaded ? "opacity-100" : "opacity-0 absolute inset-0"
+          isHovered && videoLoaded && !error ? "opacity-100" : "opacity-0 absolute inset-0"
         )}
         muted={isMuted}
         playsInline
@@ -332,7 +397,7 @@ function VideoPreview({
       <div 
         className={cn(
           "absolute inset-0 transition-opacity duration-300",
-          isHovered && videoLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+          isHovered && videoLoaded && !error ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
         {thumbnail ? (
@@ -349,7 +414,10 @@ function VideoPreview({
       </div>
 
       {/* Loading spinner */}
-      {isLoading && isHovered && <LoadingSpinner type="video" />}
+      {isLoading && isHovered && !error && <LoadingSpinner type="video" />}
+
+      {/* Error display with retry button */}
+      {error && isHovered && <ErrorDisplay type="video" onRetry={handleRetry} />}
 
       {/* Volume control */}
       <VolumeControl
@@ -357,7 +425,7 @@ function VideoPreview({
         isMuted={isMuted}
         onVolumeChange={handleVolumeChange}
         onMuteToggle={handleMuteToggle}
-        isVisible={isHovered && videoLoaded && !isLoading}
+        isVisible={isHovered && videoLoaded && !isLoading && !error}
       />
     </>
   );
@@ -377,9 +445,26 @@ function AudioPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoaded, setAudioLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.3);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Reset and retry loading
+  const handleRetry = useCallback(() => {
+    setError(false);
+    setAudioLoaded(false);
+    setIsLoading(true);
+    setIsPlaying(false);
+    setProgress(0);
+    setRetryCount(prev => prev + 1);
+    
+    const audio = audioRef.current;
+    if (audio) {
+      audio.load();
+    }
+  }, []);
 
   // Handle audio loading
   useEffect(() => {
@@ -410,11 +495,18 @@ function AudioPreview({
       setIsLoading(false);
     };
 
+    const handleError = () => {
+      setError(true);
+      setIsLoading(false);
+      setIsPlaying(false);
+    };
+
     audio.addEventListener('canplaythrough', handleCanPlay);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('waiting', handleWaiting);
     audio.addEventListener('playing', handlePlaying);
+    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('canplaythrough', handleCanPlay);
@@ -422,13 +514,14 @@ function AudioPreview({
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('waiting', handleWaiting);
       audio.removeEventListener('playing', handlePlaying);
+      audio.removeEventListener('error', handleError);
     };
-  }, [src]);
+  }, [src, retryCount]);
 
   // Handle hover play/pause with loading state
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || error) return;
 
     if (isHovered) {
       // Show loading if audio is not ready yet
@@ -442,8 +535,11 @@ function AudioPreview({
         audio.play().then(() => {
           setIsPlaying(true);
           setIsLoading(false);
-        }).catch(() => {
-          // Autoplay might be blocked
+        }).catch((e) => {
+          // Check if it's a real error or just autoplay blocked
+          if (e.name !== 'AbortError' && e.name !== 'NotAllowedError') {
+            setError(true);
+          }
           setIsPlaying(false);
           setIsLoading(false);
         });
@@ -455,7 +551,7 @@ function AudioPreview({
       setIsPlaying(false);
       setProgress(0);
     }
-  }, [isHovered, audioLoaded]);
+  }, [isHovered, audioLoaded, error]);
 
   // Update audio volume state
   useEffect(() => {
@@ -545,7 +641,7 @@ function AudioPreview({
         </div>
         
         {/* Progress bar */}
-        {isPlaying && (
+        {isPlaying && !error && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
             <div 
               className="h-full bg-gold transition-all duration-100"
@@ -555,7 +651,7 @@ function AudioPreview({
         )}
         
         {/* Playing indicator */}
-        {isPlaying && !isLoading && (
+        {isPlaying && !isLoading && !error && (
           <div className="absolute bottom-3 right-3">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm">
               <div className="flex gap-0.5">
@@ -577,7 +673,10 @@ function AudioPreview({
       </div>
 
       {/* Loading spinner */}
-      {isLoading && isHovered && <LoadingSpinner type="audio" />}
+      {isLoading && isHovered && !error && <LoadingSpinner type="audio" />}
+
+      {/* Error display with retry button */}
+      {error && isHovered && <ErrorDisplay type="audio" onRetry={handleRetry} />}
 
       {/* Volume control */}
       <VolumeControl
@@ -585,7 +684,7 @@ function AudioPreview({
         isMuted={isMuted}
         onVolumeChange={handleVolumeChange}
         onMuteToggle={handleMuteToggle}
-        isVisible={isPlaying && !isLoading}
+        isVisible={isPlaying && !isLoading && !error}
       />
     </div>
   );
