@@ -123,3 +123,6 @@
 
 ## テキストツールの追加
 - [x] テキストカテゴリにGemini、Grok、Qwen、Manusを追加
+
+## 編集・加工カテゴリの追加
+- [x] 編集・加工カテゴリにMagnific、Gigapixel、Tracejourney、Finalframe、Topazを追加

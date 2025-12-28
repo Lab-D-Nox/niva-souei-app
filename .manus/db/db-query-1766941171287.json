@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Magnific', 'AI画像アップスケーラー。高解像度化と詳細追加が可能。', 'https://magnific.ai', 'editing', true, NOW()),\n('Gigapixel', 'Topaz Labsの画像拡大AI。写真の高解像度化に特化。', 'https://www.topazlabs.com/gigapixel', 'editing', true, NOW()),\n('Tracejourney', '画像のトレース・ベクター化ツール。', NULL, 'editing', true, NOW()),\n('Finalframe', '動画・画像の最終仕上げツール。', NULL, 'editing', true, NOW()),\n('Topaz', 'Topaz Labsの画像・動画編集AIスイート。ノイズ除去や高画質化。', 'https://www.topazlabs.com', 'editing', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Magnific', 'AI画像アップスケーラー。高解像度化と詳細追加が可能。', 'https://magnific.ai', 'editing', true, NOW()),\n('Gigapixel', 'Topaz Labsの画像拡大AI。写真の高解像度化に特化。', 'https://www.topazlabs.com/gigapixel', 'editing', true, NOW()),\n('Tracejourney', '画像のトレース・ベクター化ツール。', NULL, 'editing', true, NOW()),\n('Finalframe', '動画・画像の最終仕上げツール。', NULL, 'editing', true, NOW()),\n('Topaz', 'Topaz Labsの画像・動画編集AIスイート。ノイズ除去や高画質化。', 'https://www.topazlabs.com', 'editing', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1523
+}
