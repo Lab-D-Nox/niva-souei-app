@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, name, category, description FROM tools ORDER BY category, name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, name, category, description FROM tools ORDER BY category, name;",
+  "rows": [
+    {
+      "id": "8",
+      "name": "ElevenLabs",
+      "category": "audio",
+      "description": "高品質な音声合成・ボイスクローンAI。"
+    },
+    {
+      "id": "6",
+      "name": "Suno AI",
+      "category": "audio",
+      "description": "AIによる音楽生成。歌詞から楽曲を作成。"
+    },
+    {
+      "id": "7",
+      "name": "Udio",
+      "category": "audio",
+      "description": "高品質な音楽生成AI。"
+    },
+    {
+      "id": "3",
+      "name": "DALL-E 3",
+      "category": "image",
+      "description": "OpenAIの画像生成AI。プロンプトの理解力が高い。"
+    },
+    {
+      "id": "1",
+      "name": "Midjourney",
+      "category": "image",
+      "description": "高品質な画像生成AI。アート性の高いビジュアル制作に最適。"
+    },
+    {
+      "id": "2",
+      "name": "Stable Diffusion",
+      "category": "image",
+      "description": "オープンソースの画像生成AI。カスタマイズ性が高い。"
+    },
+    {
+      "id": "9",
+      "name": "ChatGPT",
+      "category": "text",
+      "description": "OpenAIの対話型AI。テキスト生成・編集に活用。"
+    },
+    {
+      "id": "10",
+      "name": "Claude",
+      "category": "text",
+      "description": "Anthropicの対話型AI。長文処理に強い。"
+    },
+    {
+      "id": "5",
+      "name": "Pika Labs",
+      "category": "video",
+      "description": "動画生成・編集AI。"
+    },
+    {
+      "id": "4",
+      "name": "Runway Gen-2",
+      "category": "video",
+      "description": "テキストから動画を生成するAI。"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory\tdescription\n8\tElevenLabs\taudio\t高品質な音声合成・ボイスクローンAI。\n6\tSuno AI\taudio\tAIによる音楽生成。歌詞から楽曲を作成。\n7\tUdio\taudio\t高品質な音楽生成AI。\n3\tDALL-E 3\timage\tOpenAIの画像生成AI。プロンプトの理解力が高い。\n1\tMidjourney\timage\t高品質な画像生成AI。アート性の高いビジュアル制作に最適。\n2\tStable Diffusion\timage\tオープンソースの画像生成AI。カスタマイズ性が高い。\n9\tChatGPT\ttext\tOpenAIの対話型AI。テキスト生成・編集に活用。\n10\tClaude\ttext\tAnthropicの対話型AI。長文処理に強い。\n5\tPika Labs\tvideo\t動画生成・編集AI。\n4\tRunway Gen-2\tvideo\tテキストから動画を生成するAI。\n",
+  "stderr": "",
+  "execution_time_ms": 1523
+}

@@ -117,3 +117,6 @@
   - AI Visual Translation（コンセプトアート）
   - 愛犬たちのポートレート（コーギー）
   - 浮遊大陸 - Floating Continents（ファンタジー風景）
+
+## 使用ツールページの更新
+- [x] 画像生成セクションに新しいツールを追加（GPT-4o、Seedream、Flux、Mystic、NanobananaPro、Reve、Z-image、Ideogram、Runway、Lovart、Dremina）
