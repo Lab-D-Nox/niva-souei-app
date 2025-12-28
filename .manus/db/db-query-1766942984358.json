@@ -1,0 +1,358 @@
+{
+  "query": "SELECT id, name, category, iconUrl FROM tools WHERE isActive = true ORDER BY category, name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute SELECT id, name, category, iconUrl FROM tools WHERE isActive = true ORDER BY category, name;",
+  "rows": [
+    {
+      "id": "30041",
+      "name": "CoeFont",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "8",
+      "name": "ElevenLabs",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30040",
+      "name": "Google AI Studio",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30042",
+      "name": "Producer.AI",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "6",
+      "name": "Suno AI",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "7",
+      "name": "Udio",
+      "category": "audio",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30046",
+      "name": "Antigravity",
+      "category": "coding",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30044",
+      "name": "Claude Code",
+      "category": "coding",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30047",
+      "name": "Codex",
+      "category": "coding",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30045",
+      "name": "Cursor",
+      "category": "coding",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30048",
+      "name": "Manus Code",
+      "category": "coding",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30019",
+      "name": "Finalframe",
+      "category": "editing",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30017",
+      "name": "Gigapixel",
+      "category": "editing",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30016",
+      "name": "Magnific",
+      "category": "editing",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30020",
+      "name": "Topaz",
+      "category": "editing",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30018",
+      "name": "Tracejourney",
+      "category": "editing",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "3",
+      "name": "DALL-E 3",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30011",
+      "name": "Dremina",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30003",
+      "name": "Flux",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30043",
+      "name": "Google Imagen 4",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30001",
+      "name": "GPT-1.5",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30008",
+      "name": "Ideogram",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30010",
+      "name": "Lovart",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "1",
+      "name": "Midjourney",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30004",
+      "name": "Mystic",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30005",
+      "name": "NanobananaPro",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30006",
+      "name": "Reve",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30002",
+      "name": "Seedream",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "2",
+      "name": "Stable Diffusion",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30007",
+      "name": "Z-image",
+      "category": "image",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "9",
+      "name": "ChatGPT",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "10",
+      "name": "Claude",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30012",
+      "name": "Gemini",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30013",
+      "name": "Grok",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30015",
+      "name": "Manus",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30014",
+      "name": "Qwen",
+      "category": "text",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30027",
+      "name": "Domo.AI",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30033",
+      "name": "dora.studio",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30023",
+      "name": "Flova.AI",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30021",
+      "name": "FLOW",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30039",
+      "name": "Grok Video",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30025",
+      "name": "Hailuo",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30035",
+      "name": "HeyGen",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30026",
+      "name": "Higgsfield",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30022",
+      "name": "Kling",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "4",
+      "name": "Krea",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30024",
+      "name": "Luma",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30037",
+      "name": "No Lang",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "5",
+      "name": "Pika Labs",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30032",
+      "name": "PixVerse",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30009",
+      "name": "Runway",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30031",
+      "name": "Seedance",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30028",
+      "name": "Sora",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30034",
+      "name": "sousaku AI",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30036",
+      "name": "Synthesia",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30038",
+      "name": "Veo",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30029",
+      "name": "Vidu",
+      "category": "video",
+      "iconUrl": "NULL"
+    },
+    {
+      "id": "30030",
+      "name": "Wan",
+      "category": "video",
+      "iconUrl": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory\ticonUrl\n30041\tCoeFont\taudio\tNULL\n8\tElevenLabs\taudio\tNULL\n30040\tGoogle AI Studio\taudio\tNULL\n30042\tProducer.AI\taudio\tNULL\n6\tSuno AI\taudio\tNULL\n7\tUdio\taudio\tNULL\n30046\tAntigravity\tcoding\tNULL\n30044\tClaude Code\tcoding\tNULL\n30047\tCodex\tcoding\tNULL\n30045\tCursor\tcoding\tNULL\n30048\tManus Code\tcoding\tNULL\n30019\tFinalframe\tediting\tNULL\n30017\tGigapixel\tediting\tNULL\n30016\tMagnific\tediting\tNULL\n30020\tTopaz\tediting\tNULL\n30018\tTracejourney\tediting\tNULL\n3\tDALL-E 3\timage\tNULL\n30011\tDremina\timage\tNULL\n30003\tFlux\timage\tNULL\n30043\tGoogle Imagen 4\timage\tNULL\n30001\tGPT-1.5\timage\tNULL\n30008\tIdeogram\timage\tNULL\n30010\tLovart\timage\tNULL\n1\tMidjourney\timage\tNULL\n30004\tMystic\timage\tNULL\n30005\tNanobananaPro\timage\tNULL\n30006\tReve\timage\tNULL\n30002\tSeedream\timage\tNULL\n2\tStable Diffusion\timage\tNULL\n30007\tZ-image\timage\tNULL\n9\tChatGPT\ttext\tNULL\n10\tClaude\ttext\tNULL\n30012\tGemini\ttext\tNULL\n30013\tGrok\ttext\tNULL\n30015\tManus\ttext\tNULL\n30014\tQwen\ttext\tNULL\n30027\tDomo.AI\tvideo\tNULL\n30033\tdora.studio\tvideo\tNULL\n30023\tFlova.AI\tvideo\tNULL\n30021\tFLOW\tvideo\tNULL\n30039\tGrok Video\tvideo\tNULL\n30025\tHailuo\tvideo\tNULL\n30035\tHeyGen\tvideo\tNULL\n30026\tHiggsfield\tvideo\tNULL\n30022\tKling\tvideo\tNULL\n4\tKrea\tvideo\tNULL\n30024\tLuma\tvideo\tNULL\n30037\tNo Lang\tvideo\tNULL\n5\tPika Labs\tvideo\tNULL\n30032\tPixVerse\tvideo\tNULL\n30009\tRunway\tvideo\tNULL\n30031\tSeedance\tvideo\tNULL\n30028\tSora\tvideo\tNULL\n30034\tsousaku AI\tvideo\tNULL\n30036\tSynthesia\tvideo\tNULL\n30038\tVeo\tvideo\tNULL\n30029\tVidu\tvideo\tNULL\n30030\tWan\tvideo\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1518
+}

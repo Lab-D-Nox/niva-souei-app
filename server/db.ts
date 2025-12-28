@@ -374,6 +374,19 @@ export async function getToolsByWorkId(workId: number) {
   return result;
 }
 
+export async function updateToolIconUrl(toolId: number, iconUrl: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(tools).set({ iconUrl }).where(eq(tools.id, toolId));
+}
+
+export async function getToolById(toolId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(tools).where(eq(tools.id, toolId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
 export async function setWorkTools(workId: number, toolIds: number[]) {
   const db = await getDb();
   if (!db) return;

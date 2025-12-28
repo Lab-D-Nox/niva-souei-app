@@ -399,6 +399,12 @@ export const appRouter = router({
       return await db.getAllTools();
     }),
     
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getToolById(input.id);
+      }),
+    
     create: adminProcedure
       .input(z.object({
         name: z.string().min(1).max(100),
@@ -410,6 +416,16 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const id = await db.createTool(input);
         return { id };
+      }),
+    
+    updateIconUrl: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        iconUrl: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateToolIconUrl(input.id, input.iconUrl);
+        return { success: true };
       }),
   }),
 
