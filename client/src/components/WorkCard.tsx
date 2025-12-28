@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useState, useRef, useEffect } from "react";
-import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause, VolumeX, Volume1 } from "lucide-react";
+import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause, VolumeX, Volume1, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +62,40 @@ function isAudioUrl(url: string): boolean {
   const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a', '.aac', '.flac'];
   const lowerUrl = url.toLowerCase();
   return audioExtensions.some(ext => lowerUrl.includes(ext));
+}
+
+// Loading spinner component with water droplet animation
+function LoadingSpinner({ type }: { type: 'video' | 'audio' }) {
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-3">
+        {/* Animated water droplet loader */}
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full border-2 border-gold/30 border-t-gold animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            {type === 'video' ? (
+              <Play className="h-5 w-5 text-gold" />
+            ) : (
+              <Music className="h-5 w-5 text-gold" />
+            )}
+          </div>
+        </div>
+        {/* Loading text with pulse animation */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-white/80 font-medium">読み込み中</span>
+          <div className="flex gap-0.5">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-1 h-1 rounded-full bg-gold animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Volume control component
@@ -166,6 +200,7 @@ function VideoPreview({
   const [thumbnail, setThumbnail] = useState<string | null>(thumbnailUrl || null);
   const [error, setError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.3);
 
@@ -202,6 +237,7 @@ function VideoPreview({
 
     const handleError = () => {
       setError(true);
+      setIsLoading(false);
     };
 
     video.addEventListener('loadeddata', handleLoadedData);
@@ -215,23 +251,39 @@ function VideoPreview({
     };
   }, [src, thumbnailUrl, thumbnail]);
 
-  // Handle hover play/pause
+  // Handle hover play/pause with loading state
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isHovered && videoLoaded) {
-      video.currentTime = 0;
-      video.muted = isMuted;
-      video.volume = volume;
-      video.play().catch(() => {
-        // Autoplay might be blocked, ignore error
-      });
+    if (isHovered) {
+      // Show loading if video is not ready yet
+      if (!videoLoaded) {
+        setIsLoading(true);
+      }
+      
+      if (videoLoaded) {
+        setIsLoading(false);
+        video.currentTime = 0;
+        video.muted = isMuted;
+        video.volume = volume;
+        video.play().catch(() => {
+          // Autoplay might be blocked, ignore error
+        });
+      }
     } else {
+      setIsLoading(false);
       video.pause();
       video.currentTime = 0;
     }
   }, [isHovered, videoLoaded]);
+
+  // When video becomes loaded while hovering, hide loading
+  useEffect(() => {
+    if (videoLoaded && isHovered) {
+      setIsLoading(false);
+    }
+  }, [videoLoaded, isHovered]);
 
   // Update video mute/volume state
   useEffect(() => {
@@ -296,13 +348,16 @@ function VideoPreview({
         )}
       </div>
 
+      {/* Loading spinner */}
+      {isLoading && isHovered && <LoadingSpinner type="video" />}
+
       {/* Volume control */}
       <VolumeControl
         volume={volume}
         isMuted={isMuted}
         onVolumeChange={handleVolumeChange}
         onMuteToggle={handleMuteToggle}
-        isVisible={isHovered && videoLoaded}
+        isVisible={isHovered && videoLoaded && !isLoading}
       />
     </>
   );
@@ -321,6 +376,7 @@ function AudioPreview({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoaded, setAudioLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.3);
@@ -332,6 +388,7 @@ function AudioPreview({
 
     const handleCanPlay = () => {
       setAudioLoaded(true);
+      setIsLoading(false);
     };
 
     const handleTimeUpdate = () => {
@@ -345,32 +402,54 @@ function AudioPreview({
       setProgress(0);
     };
 
+    const handleWaiting = () => {
+      setIsLoading(true);
+    };
+
+    const handlePlaying = () => {
+      setIsLoading(false);
+    };
+
     audio.addEventListener('canplaythrough', handleCanPlay);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('playing', handlePlaying);
 
     return () => {
       audio.removeEventListener('canplaythrough', handleCanPlay);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('playing', handlePlaying);
     };
   }, [src]);
 
-  // Handle hover play/pause
+  // Handle hover play/pause with loading state
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isHovered && audioLoaded) {
-      audio.currentTime = 0;
-      audio.volume = isMuted ? 0 : volume;
-      audio.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        // Autoplay might be blocked
-        setIsPlaying(false);
-      });
+    if (isHovered) {
+      // Show loading if audio is not ready yet
+      if (!audioLoaded) {
+        setIsLoading(true);
+      }
+      
+      if (audioLoaded) {
+        audio.currentTime = 0;
+        audio.volume = isMuted ? 0 : volume;
+        audio.play().then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        }).catch(() => {
+          // Autoplay might be blocked
+          setIsPlaying(false);
+          setIsLoading(false);
+        });
+      }
     } else {
+      setIsLoading(false);
       audio.pause();
       audio.currentTime = 0;
       setIsPlaying(false);
@@ -476,7 +555,7 @@ function AudioPreview({
         )}
         
         {/* Playing indicator */}
-        {isPlaying && (
+        {isPlaying && !isLoading && (
           <div className="absolute bottom-3 right-3">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm">
               <div className="flex gap-0.5">
@@ -497,13 +576,16 @@ function AudioPreview({
         )}
       </div>
 
+      {/* Loading spinner */}
+      {isLoading && isHovered && <LoadingSpinner type="audio" />}
+
       {/* Volume control */}
       <VolumeControl
         volume={volume}
         isMuted={isMuted}
         onVolumeChange={handleVolumeChange}
         onMuteToggle={handleMuteToggle}
-        isVisible={isPlaying}
+        isVisible={isPlaying && !isLoading}
       />
     </div>
   );
