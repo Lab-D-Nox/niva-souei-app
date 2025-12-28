@@ -411,7 +411,7 @@ export default function Home() {
 
           <div className="text-center">
             <Button asChild className="liquid-button rounded-full px-8 py-6 text-lg">
-              <Link href="/service">
+              <Link href="/services">
                 詳細を見る
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

@@ -18,7 +18,7 @@ import { ScrollToTop } from "./ScrollToTop";
 const navLinks = [
   { href: "/works", label: "作品一覧" },
   { href: "/philosophy", label: "Nivaの想映" },
-  { href: "/service", label: "料金プラン" },
+  { href: "/services", label: "料金プラン" },
   { href: "/tools", label: "使用ツール" },
   { href: "/links", label: "SNS" },
   { href: "/contact", label: "依頼する" },
@@ -195,7 +195,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/service" className="hover:text-gold transition-colors">
+                <Link href="/services" className="hover:text-gold transition-colors">
                   料金プラン
                 </Link>
               </li>
