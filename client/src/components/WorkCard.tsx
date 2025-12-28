@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useState, useRef, useEffect } from "react";
-import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause } from "lucide-react";
+import { Heart, Eye, MessageCircle, Play, Music, FileText, Globe, Image as ImageIcon, Volume2, Pause, VolumeX, Volume1 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +64,92 @@ function isAudioUrl(url: string): boolean {
   return audioExtensions.some(ext => lowerUrl.includes(ext));
 }
 
-// Video preview component with hover autoplay
+// Volume control component
+function VolumeControl({ 
+  volume, 
+  isMuted, 
+  onVolumeChange, 
+  onMuteToggle,
+  isVisible 
+}: { 
+  volume: number; 
+  isMuted: boolean; 
+  onVolumeChange: (volume: number) => void; 
+  onMuteToggle: () => void;
+  isVisible: boolean;
+}) {
+  const [showSlider, setShowSlider] = useState(false);
+  
+  const VolumeIcon = isMuted || volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2;
+  
+  return (
+    <div 
+      className={cn(
+        "absolute bottom-3 left-3 z-20 transition-all duration-300",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+      )}
+      onMouseEnter={() => setShowSlider(true)}
+      onMouseLeave={() => setShowSlider(false)}
+    >
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded-full bg-black/70 backdrop-blur-sm">
+        {/* Mute button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onMuteToggle();
+          }}
+          className="w-6 h-6 flex items-center justify-center text-white hover:text-gold transition-colors"
+          title={isMuted ? "ミュート解除" : "ミュート"}
+        >
+          <VolumeIcon className="h-4 w-4" />
+        </button>
+        
+        {/* Volume slider */}
+        <div 
+          className={cn(
+            "overflow-hidden transition-all duration-300",
+            showSlider ? "w-16 opacity-100" : "w-0 opacity-0"
+          )}
+        >
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={isMuted ? 0 : volume}
+            onChange={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onVolumeChange(parseFloat(e.target.value));
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className="w-full h-1 bg-white/30 rounded-full appearance-none cursor-pointer
+              [&::-webkit-slider-thumb]:appearance-none
+              [&::-webkit-slider-thumb]:w-3
+              [&::-webkit-slider-thumb]:h-3
+              [&::-webkit-slider-thumb]:rounded-full
+              [&::-webkit-slider-thumb]:bg-gold
+              [&::-webkit-slider-thumb]:cursor-pointer
+              [&::-webkit-slider-thumb]:transition-transform
+              [&::-webkit-slider-thumb]:hover:scale-125
+              [&::-moz-range-thumb]:w-3
+              [&::-moz-range-thumb]:h-3
+              [&::-moz-range-thumb]:rounded-full
+              [&::-moz-range-thumb]:bg-gold
+              [&::-moz-range-thumb]:border-0
+              [&::-moz-range-thumb]:cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Video preview component with hover autoplay and volume control
 function VideoPreview({ 
   src, 
   alt, 
@@ -81,6 +166,8 @@ function VideoPreview({
   const [thumbnail, setThumbnail] = useState<string | null>(thumbnailUrl || null);
   const [error, setError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(0.3);
 
   // Extract first frame for thumbnail if no thumbnailUrl provided
   useEffect(() => {
@@ -135,6 +222,8 @@ function VideoPreview({
 
     if (isHovered && videoLoaded) {
       video.currentTime = 0;
+      video.muted = isMuted;
+      video.volume = volume;
       video.play().catch(() => {
         // Autoplay might be blocked, ignore error
       });
@@ -143,6 +232,25 @@ function VideoPreview({
       video.currentTime = 0;
     }
   }, [isHovered, videoLoaded]);
+
+  // Update video mute/volume state
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = isMuted;
+    video.volume = volume;
+  }, [isMuted, volume]);
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    if (newVolume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  };
+
+  const handleMuteToggle = () => {
+    setIsMuted(!isMuted);
+  };
 
   if (error) {
     return (
@@ -161,7 +269,7 @@ function VideoPreview({
           "w-full h-full object-cover transition-opacity duration-300",
           isHovered && videoLoaded ? "opacity-100" : "opacity-0 absolute inset-0"
         )}
-        muted
+        muted={isMuted}
         playsInline
         loop
         preload="metadata"
@@ -187,11 +295,20 @@ function VideoPreview({
           </div>
         )}
       </div>
+
+      {/* Volume control */}
+      <VolumeControl
+        volume={volume}
+        isMuted={isMuted}
+        onVolumeChange={handleVolumeChange}
+        onMuteToggle={handleMuteToggle}
+        isVisible={isHovered && videoLoaded}
+      />
     </>
   );
 }
 
-// Audio preview component with hover autoplay
+// Audio preview component with hover autoplay and volume control
 function AudioPreview({ 
   src, 
   thumbnailUrl,
@@ -205,6 +322,8 @@ function AudioPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoaded, setAudioLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(0.3);
 
   // Handle audio loading
   useEffect(() => {
@@ -244,7 +363,7 @@ function AudioPreview({
 
     if (isHovered && audioLoaded) {
       audio.currentTime = 0;
-      audio.volume = 0.3; // Lower volume for preview
+      audio.volume = isMuted ? 0 : volume;
       audio.play().then(() => {
         setIsPlaying(true);
       }).catch(() => {
@@ -258,6 +377,24 @@ function AudioPreview({
       setProgress(0);
     }
   }, [isHovered, audioLoaded]);
+
+  // Update audio volume state
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = isMuted ? 0 : volume;
+  }, [isMuted, volume]);
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    if (newVolume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  };
+
+  const handleMuteToggle = () => {
+    setIsMuted(!isMuted);
+  };
 
   // Generate random bar heights for visualization (static when not playing)
   const [barHeights] = useState(() => 
@@ -359,6 +496,15 @@ function AudioPreview({
           </div>
         )}
       </div>
+
+      {/* Volume control */}
+      <VolumeControl
+        volume={volume}
+        isMuted={isMuted}
+        onVolumeChange={handleVolumeChange}
+        onMuteToggle={handleMuteToggle}
+        isVisible={isPlaying}
+      />
     </div>
   );
 }
