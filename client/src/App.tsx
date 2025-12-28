@@ -17,6 +17,7 @@ import Links from "./pages/Links";
 import Tools from "./pages/Tools";
 import Philosophy from "./pages/Philosophy";
 import Services from "./pages/Services";
+import Notifications from "./pages/Notifications";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/tools" component={Tools} />
       <Route path="/philosophy" component={Philosophy} />
       <Route path="/services" component={Services} />
+      <Route path="/notifications" component={Notifications} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

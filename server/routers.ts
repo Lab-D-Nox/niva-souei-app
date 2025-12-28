@@ -359,6 +359,19 @@ export const appRouter = router({
           body: input.body,
         });
         
+        // Notify work owner about new comment
+        const work = await db.getWorkById(input.workId);
+        if (work && work.ownerUserId !== ctx.user.id) {
+          await db.createNotification({
+            userId: work.ownerUserId,
+            type: 'comment',
+            title: '新しいコメント',
+            message: `${ctx.user.name || 'ユーザー'}さんが「${work.title}」にコメントしました。`,
+            workId: input.workId,
+            commentId: id,
+          });
+        }
+        
         return { id };
       }),
     
@@ -423,6 +436,30 @@ export const appRouter = router({
         }
         
         const id = await db.createInquiry(input);
+        
+        // Notify admin users about new inquiry
+        const admins = await db.getAdminUsers();
+        for (const admin of admins) {
+          await db.createNotification({
+            userId: admin.id,
+            type: 'inquiry',
+            title: '新しいお問い合わせ',
+            message: `${input.name}様から新しいお問い合わせが届きました。`,
+            inquiryId: id,
+          });
+        }
+        
+        // Use built-in notification to notify owner
+        try {
+          const { notifyOwner } = await import('./_core/notification');
+          await notifyOwner({
+            title: '新しいお問い合わせが届きました',
+            content: `名前: ${input.name}\nメール: ${input.email}\n種別: ${input.inquiryType}\n内容: ${input.message.substring(0, 200)}...`,
+          });
+        } catch (e) {
+          console.error('Failed to notify owner:', e);
+        }
+        
         return { id };
       }),
     
@@ -504,6 +541,83 @@ export const appRouter = router({
       const mode = await db.getSetting('posting_mode');
       return { mode: mode || 'admin_only' };
     }),
+  }),
+
+  notifications: router({
+    list: protectedProcedure
+      .input(z.object({ limit: z.number().min(1).max(100).default(50) }).optional())
+      .query(async ({ ctx, input }) => {
+        return await db.getNotificationsByUserId(ctx.user.id, input?.limit || 50);
+      }),
+    
+    unreadCount: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getUnreadNotificationCount(ctx.user.id);
+    }),
+    
+    markAsRead: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.markNotificationAsRead(input.id, ctx.user.id);
+        return { success: true };
+      }),
+    
+    markAllAsRead: protectedProcedure.mutation(async ({ ctx }) => {
+      await db.markAllNotificationsAsRead(ctx.user.id);
+      return { success: true };
+    }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteNotification(input.id, ctx.user.id);
+        return { success: true };
+      }),
+    
+    // Push subscription management
+    subscribePush: protectedProcedure
+      .input(z.object({
+        endpoint: z.string(),
+        p256dh: z.string(),
+        auth: z.string(),
+        userAgent: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.createPushSubscription({
+          userId: ctx.user.id,
+          ...input,
+        });
+        return { success: true };
+      }),
+    
+    unsubscribePush: protectedProcedure
+      .input(z.object({ endpoint: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deletePushSubscription(ctx.user.id, input.endpoint);
+        return { success: true };
+      }),
+    
+    // Email notification settings
+    getEmailSettings: protectedProcedure.query(async ({ ctx }) => {
+      const settings = await db.getEmailNotificationSettings(ctx.user.id);
+      return settings || {
+        onNewComment: true,
+        onNewLike: false,
+        onNewInquiry: true,
+        onSystemUpdates: true,
+      };
+    }),
+    
+    updateEmailSettings: protectedProcedure
+      .input(z.object({
+        onNewComment: z.boolean().optional(),
+        onNewLike: z.boolean().optional(),
+        onNewInquiry: z.boolean().optional(),
+        onSystemUpdates: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.upsertEmailNotificationSettings(ctx.user.id, input);
+        return { success: true };
+      }),
   }),
 
   upload: router({

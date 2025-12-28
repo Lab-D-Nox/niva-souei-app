@@ -462,3 +462,166 @@ export async function checkRateLimit(identifier: string, action: string, maxCoun
   
   return true;
 }
+
+
+// ============ NOTIFICATIONS FUNCTIONS ============
+import { 
+  notifications, InsertNotification,
+  pushSubscriptions, InsertPushSubscription,
+  emailNotificationSettings, InsertEmailNotificationSetting
+} from "../drizzle/schema";
+
+export async function createNotification(data: InsertNotification) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(notifications).values(data);
+  return result[0].insertId;
+}
+
+export async function getNotificationsByUserId(userId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(notifications)
+    .where(eq(notifications.userId, userId))
+    .orderBy(desc(notifications.createdAt))
+    .limit(limit);
+}
+
+export async function getUnreadNotificationCount(userId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(notifications)
+    .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
+  return result[0]?.count || 0;
+}
+
+export async function markNotificationAsRead(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(notifications)
+    .set({ isRead: true })
+    .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
+}
+
+export async function markAllNotificationsAsRead(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(notifications)
+    .set({ isRead: true })
+    .where(eq(notifications.userId, userId));
+}
+
+export async function deleteNotification(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .delete(notifications)
+    .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
+}
+
+// ============ PUSH SUBSCRIPTIONS FUNCTIONS ============
+export async function createPushSubscription(data: InsertPushSubscription) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Check if subscription already exists for this user with same endpoint
+  const existing = await db
+    .select()
+    .from(pushSubscriptions)
+    .where(and(
+      eq(pushSubscriptions.userId, data.userId),
+      eq(pushSubscriptions.endpoint, data.endpoint)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    // Update existing subscription
+    await db
+      .update(pushSubscriptions)
+      .set({ p256dh: data.p256dh, auth: data.auth, isActive: true, userAgent: data.userAgent })
+      .where(eq(pushSubscriptions.id, existing[0].id));
+    return existing[0].id;
+  }
+  
+  const result = await db.insert(pushSubscriptions).values(data);
+  return result[0].insertId;
+}
+
+export async function getPushSubscriptionsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(pushSubscriptions)
+    .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.isActive, true)));
+}
+
+export async function getAllActivePushSubscriptions() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.isActive, true));
+}
+
+export async function deactivatePushSubscription(endpoint: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(pushSubscriptions)
+    .set({ isActive: false })
+    .where(eq(pushSubscriptions.endpoint, endpoint));
+}
+
+export async function deletePushSubscription(userId: number, endpoint: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .delete(pushSubscriptions)
+    .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.endpoint, endpoint)));
+}
+
+// ============ EMAIL NOTIFICATION SETTINGS FUNCTIONS ============
+export async function getEmailNotificationSettings(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(emailNotificationSettings)
+    .where(eq(emailNotificationSettings.userId, userId))
+    .limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertEmailNotificationSettings(userId: number, settings: Partial<InsertEmailNotificationSetting>) {
+  const db = await getDb();
+  if (!db) return;
+  
+  const existing = await getEmailNotificationSettings(userId);
+  
+  if (existing) {
+    await db
+      .update(emailNotificationSettings)
+      .set(settings)
+      .where(eq(emailNotificationSettings.userId, userId));
+  } else {
+    await db.insert(emailNotificationSettings).values({ userId, ...settings });
+  }
+}
+
+// ============ ADMIN USERS FUNCTIONS ============
+export async function getAdminUsers() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(users)
+    .where(eq(users.role, "admin"));
+}

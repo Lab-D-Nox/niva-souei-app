@@ -10,8 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, X, User, LogOut, Image, PenTool, Heart } from "lucide-react";
+import { Menu, X, User, LogOut, Image, PenTool, Heart, Settings } from "lucide-react";
 import { useState } from "react";
+import { NotificationCenter } from "./NotificationCenter";
 
 const navLinks = [
   { href: "/works", label: "作品一覧" },
@@ -55,6 +56,9 @@ export function Header() {
 
           {/* Auth Section */}
           <div className="flex items-center gap-2">
+            {/* Notification Bell - only show when logged in */}
+            {isAuthenticated && user && <NotificationCenter />}
+            
             {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

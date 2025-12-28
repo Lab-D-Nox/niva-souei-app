@@ -208,3 +208,62 @@ export const rateLimits = mysqlTable("rate_limits", {
 
 export type RateLimit = typeof rateLimits.$inferSelect;
 export type InsertRateLimit = typeof rateLimits.$inferInsert;
+
+
+/**
+ * Notifications table - stores in-app notifications for users
+ */
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  type: mysqlEnum("type", ["like", "comment", "inquiry", "system", "mention"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  // Related entity references
+  workId: int("workId"),
+  commentId: int("commentId"),
+  inquiryId: int("inquiryId"),
+  // Status
+  isRead: boolean("isRead").default(false).notNull(),
+  // Metadata
+  metadata: json("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+
+/**
+ * Push Subscriptions table - stores browser push notification subscriptions
+ */
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  userAgent: text("userAgent"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+/**
+ * Email Notification Settings table - stores user email notification preferences
+ */
+export const emailNotificationSettings = mysqlTable("email_notification_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  onNewComment: boolean("onNewComment").default(true).notNull(),
+  onNewLike: boolean("onNewLike").default(false).notNull(),
+  onNewInquiry: boolean("onNewInquiry").default(true).notNull(),
+  onSystemUpdates: boolean("onSystemUpdates").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type EmailNotificationSetting = typeof emailNotificationSettings.$inferSelect;
+export type InsertEmailNotificationSetting = typeof emailNotificationSettings.$inferInsert;
