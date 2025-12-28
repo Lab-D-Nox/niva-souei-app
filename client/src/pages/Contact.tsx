@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink, Send } from "lucide-react";
+import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink, Send, CheckCircle2 } from "lucide-react";
+import { useSearch } from "wouter";
 
 const LINE_URL = "https://lin.ee/nJQQAw41";
 
 const inquiryTypeOptions = [
-  { value: "spot", label: "Spot Concept（スポット現像）" },
-  { value: "standard", label: "Standard Translation（標準翻訳）" },
-  { value: "grand", label: "Grand Story（全編想映）" },
+  { value: "1", label: "Tier 1: Droplet（雫）- ¥50,000〜", tier: 1 },
+  { value: "2", label: "Tier 2: Ripple（波紋）- ¥150,000〜", tier: 2 },
+  { value: "3", label: "Tier 3: Stream（水流）- ¥300,000〜", tier: 3 },
+  { value: "4", label: "Tier 4: Deep（深海）- ¥600,000〜", tier: 4 },
+  { value: "5", label: "Tier 5: Genesis（源泉）- ¥1,000,000〜", tier: 5 },
   { value: "other", label: "その他・相談" },
 ];
 
@@ -61,6 +64,7 @@ const hearingQuestions = [
 ];
 
 export default function Contact() {
+  const searchString = useSearch();
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [inquiryType, setInquiryType] = useState("other");
@@ -69,6 +73,17 @@ export default function Contact() {
   const [deadline, setDeadline] = useState("");
   const [referenceUrls, setReferenceUrls] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [tierFromUrl, setTierFromUrl] = useState<string | null>(null);
+
+  // URLクエリパラメータからTierを取得して自動設定
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const tier = params.get("tier");
+    if (tier && ["1", "2", "3", "4", "5"].includes(tier)) {
+      setInquiryType(tier);
+      setTierFromUrl(tier);
+    }
+  }, [searchString]);
 
   // Hearing sheet state
   const [hearingAnswers, setHearingAnswers] = useState<Record<string, string[]>>({});
@@ -347,7 +362,15 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <Label className="mb-2 block">ご依頼の種類</Label>
+                  <Label className="mb-2 block">ご依頼のプラン</Label>
+                  {tierFromUrl && (
+                    <div className="mb-3 p-3 bg-gold/10 border border-gold/30 rounded-lg flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-gold" />
+                      <span className="text-sm text-[#2B3A42]">
+                        料金プランページから <span className="font-medium text-gold">{inquiryTypeOptions.find(o => o.value === tierFromUrl)?.label}</span> が選択されました
+                      </span>
+                    </div>
+                  )}
                   <Select value={inquiryType} onValueChange={setInquiryType}>
                     <SelectTrigger>
                       <SelectValue />
