@@ -120,7 +120,8 @@ export default function Tools() {
                         {categoryTools.map((tool: any, toolIndex: number) => (
                           <div
                             key={tool.id}
-                            className="group glass-card p-6 hover-lift"
+                            id={`tool-${tool.id}`}
+                            className="group glass-card p-6 hover-lift scroll-mt-24"
                             style={{ animationDelay: `${toolIndex * 50}ms` }}
                           >
                             <div className="flex items-start gap-4 mb-4">

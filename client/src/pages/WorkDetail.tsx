@@ -508,24 +508,25 @@ export default function WorkDetail() {
               {/* Tools */}
               {work.tools && work.tools.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="font-medium mb-3">使用ツール</h3>
+                  <h3 className="font-medium mb-3">使用AIツール</h3>
                   <div className="flex flex-wrap gap-2">
                     {work.tools.map((tool: any) => (
-                      <a
+                      <Link
                         key={tool.id}
-                        href={tool.url || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-card border border-border/50 rounded-lg text-sm hover:border-primary/50 transition-colors"
+                        href={`/tools#tool-${tool.id}`}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-gold/10 border border-gold/30 rounded-full text-sm hover:bg-gold/20 hover:border-gold/50 transition-colors text-foreground"
                       >
+                        <span className="text-gold">#</span>
                         {tool.iconUrl && (
                           <img src={tool.iconUrl} alt="" className="w-4 h-4" />
                         )}
                         {tool.name}
-                        {tool.url && <ExternalLink className="h-3 w-3" />}
-                      </a>
+                      </Link>
                     ))}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    タグをクリックするとツールの詳細を確認できます
+                  </p>
                 </div>
               )}
 
@@ -643,18 +644,27 @@ export default function WorkDetail() {
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </Link>
-                    <Link href="/contact" className="block">
+                    <Link href={`/contact?ref=${encodeURIComponent(window.location.href)}&work=${work?.title || ''}`} className="block">
                       <div className="flex items-center justify-between p-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                        <span className="text-sm font-medium">Nivaに依頼する</span>
+                        <span className="text-sm font-medium">この作品のような作品をNivaに依頼する</span>
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </Link>
-                    <Link href="/tools" className="block">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
-                        <span className="text-sm font-medium">使用AIツールを見る</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </div>
-                    </Link>
+                    {work?.tools && work.tools.length > 0 ? (
+                      <Link href={`/tools#tool-${work.tools[0].id}`} className="block">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
+                          <span className="text-sm font-medium">この作品の使用AIツールを見る</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
+                      </Link>
+                    ) : (
+                      <Link href="/tools" className="block">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
+                          <span className="text-sm font-medium">使用AIツール一覧を見る</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
+                      </Link>
+                    )}
                   </div>
                 </div>
 

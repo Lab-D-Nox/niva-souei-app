@@ -38,28 +38,61 @@ const hearingQuestions = [
   {
     id: "purpose",
     question: "制作の目的・用途は何ですか？",
-    options: ["SNS投稿用", "プロモーション", "ブランディング", "個人利用", "その他"],
+    options: [
+      "SNS投稿用（TikTok/Instagram/YouTube Shorts）",
+      "商品・SaaSプロモーション",
+      "ブランディング・コンセプト映像",
+      "モーションロゴ・アイデンティティ",
+      "個人利用（記念日・ギフト）",
+      "その他"
+    ],
   },
   {
     id: "target",
     question: "ターゲット層は誰ですか？",
-    options: ["10代〜20代", "30代〜40代", "50代以上", "全年齢", "特定業界向け"],
+    options: ["10代〜20代", "30代〜40代", "50代以上", "全年齢", "特定業界向け", "B2B企業向け"],
   },
   {
     id: "mood",
     question: "希望する雰囲気・トーンは？",
-    options: ["明るい・ポップ", "落ち着いた・シック", "クール・スタイリッシュ", "温かみのある", "神秘的・幻想的", "その他"],
+    options: [
+      "明るい・ポップ",
+      "落ち着いた・シック",
+      "クール・スタイリッシュ",
+      "温かみのある・エモーショナル",
+      "神秘的・幻想的",
+      "高級感・ラグジュアリー",
+      "その他"
+    ],
   },
   {
     id: "format",
-    question: "希望する形式は？",
-    options: ["静止画", "動画（短尺）", "動画（長尺）", "音楽・BGM", "複合的", "未定"],
+    question: "希望する形式は？（Tierにより対応内容が異なります）",
+    options: [
+      "モーションロゴ（Tier 1〜）",
+      "SNS特化型ショート（Tier 2〜）",
+      "スタンダードCM（Tier 3〜）",
+      "世界観構築ムービー（Tier 4〜）",
+      "総合芸術・ブランディング（Tier 5）",
+      "未定・相談したい"
+    ],
+  },
+  {
+    id: "syncPoint",
+    question: "音と映像の「同期」で特に重視したい点は？",
+    options: [
+      "ビートに合わせたカット切り替え",
+      "感情の盛り上がりに合わせた演出",
+      "リズムに乗せたテキスト表示",
+      "BGMの余韻を活かした終わり方",
+      "おまかせしたい"
+    ],
   },
   {
     id: "reference",
     question: "参考にしたいイメージはありますか？",
     type: "text",
-    placeholder: "参考URL、作品名、イメージなど",
+    placeholder: "Nivaの作品URL、他の参考作品、イメージなど",
   },
 ];
 
@@ -74,14 +107,28 @@ export default function Contact() {
   const [referenceUrls, setReferenceUrls] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [tierFromUrl, setTierFromUrl] = useState<string | null>(null);
+  const [refWorkUrl, setRefWorkUrl] = useState<string | null>(null);
+  const [refWorkTitle, setRefWorkTitle] = useState<string | null>(null);
 
-  // URLクエリパラメータからTierを取得して自動設定
+  // URLクエリパラメータからTierと参考作品URLを取得して自動設定
   useEffect(() => {
     const params = new URLSearchParams(searchString);
     const tier = params.get("tier");
     if (tier && ["1", "2", "3", "4", "5"].includes(tier)) {
       setInquiryType(tier);
       setTierFromUrl(tier);
+    }
+    
+    // 参考作品URLを取得
+    const ref = params.get("ref");
+    const workTitle = params.get("work");
+    if (ref) {
+      setRefWorkUrl(decodeURIComponent(ref));
+      // 参考URL欄に自動入力
+      setReferenceUrls(decodeURIComponent(ref));
+    }
+    if (workTitle) {
+      setRefWorkTitle(decodeURIComponent(workTitle));
     }
   }, [searchString]);
 
@@ -414,12 +461,35 @@ export default function Contact() {
                   <Label htmlFor="references" className="mb-2 block">
                     参考URL
                   </Label>
+                  {refWorkUrl && (
+                    <div className="mb-3 p-3 bg-gold/10 border border-gold/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle2 className="h-5 w-5 text-gold" />
+                        <span className="text-sm font-medium text-gold">参考作品が選択されました</span>
+                      </div>
+                      <p className="text-sm text-[#2B3A42]">
+                        {refWorkTitle && <span className="font-medium">「{refWorkTitle}」</span>}
+                        のような作品をご希望ですね。
+                      </p>
+                      <a 
+                        href={refWorkUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-gold/70 hover:text-gold inline-flex items-center gap-1 mt-1"
+                      >
+                        作品を確認 <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  )}
                   <Input
                     id="references"
                     value={referenceUrls}
                     onChange={(e) => setReferenceUrls(e.target.value)}
                     placeholder="参考にしたいサイトやコンテンツのURL"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    ※ 作品一覧から「この作品のような作品をNivaに依頼する」をクリックすると自動入力されます
+                  </p>
                 </div>
 
                 <div>

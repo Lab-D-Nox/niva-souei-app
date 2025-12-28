@@ -63,7 +63,10 @@ export default function Works() {
   const [keyword, setKeyword] = useState(params.get("q") || "");
   const [searchInput, setSearchInput] = useState(params.get("q") || "");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [selectedTool, setSelectedTool] = useState<number | null>(null);
+  const toolParam = params.get("tool");
+  const [selectedTool, setSelectedTool] = useState<number | null>(
+    toolParam ? parseInt(toolParam) : null
+  );
   const [page, setPage] = useState(0);
   const limit = 12;
 
@@ -210,6 +213,18 @@ export default function Works() {
               <Palette className="h-8 w-8 md:h-9 md:w-9 text-gold" />
               作品一覧
             </h1>
+            
+            {/* Tool Filter Banner */}
+            {selectedTool && toolsData && (
+              <div className="mt-4 p-4 bg-gold/10 border border-gold/30 rounded-lg text-center">
+                <p className="text-sm text-foreground">
+                  <span className="text-gold font-medium">
+                    #{toolsData.find((t: any) => t.id === selectedTool)?.name}
+                  </span>
+                  {" "}を使用した作品を表示中
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Search and Filters */}
