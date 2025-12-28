@@ -194,8 +194,23 @@ export default function Home() {
       <CausticsBackground />
       <ClickRipple />
       
-      {/* Hero Section - 3本の光が衝突して波紋が広がる */}
+      {/* Hero Section - 背景動画と3本の光が衝突して波紋が広がる */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/hero-bg.mp4" type="video/mp4" />
+          </video>
+          {/* Video overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#F4F8FA]/85 via-[#F4F8FA]/70 to-[#F4F8FA]/90" />
+        </div>
+        
         <LightBeamsAnimation />
 
         <div className="container relative z-10 text-center">
