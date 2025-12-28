@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -6,6 +7,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ClickRippleProvider } from "./components/ClickRipple";
 import { MouseStalker } from "./components/MouseStalker";
+import { LoadingScreen } from "./components/LoadingScreen";
 
 // Pages
 import Home from "./pages/Home";
@@ -45,9 +47,17 @@ function Router() {
 }
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
+        {isLoading && (
+          <LoadingScreen
+            onLoadingComplete={() => setIsLoading(false)}
+            minDisplayTime={2500}
+          />
+        )}
         <ClickRippleProvider>
           <MouseStalker />
           <TooltipProvider>
