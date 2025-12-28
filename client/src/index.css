@@ -696,3 +696,197 @@ html {
     font-family: "Zen Kaku Gothic New", system-ui, sans-serif;
   }
 }
+
+
+/* ===== Mobile Responsive Styles (768px以下) ===== */
+@media (max-width: 768px) {
+  /* スタックレイアウトへの変更 */
+  .section-container {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+
+  /* セクションのパディング調整 */
+  .section {
+    @apply py-12;
+  }
+
+  /* Philosophy図解の縦型化 */
+  .diagram-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Workflowのタイムライン化 */
+  .workflow-timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .workflow-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, #C0A060, #5B8A9A, #7A9E7E, #9A7B8A, #C0A060);
+    border-radius: 2px;
+  }
+  
+  .workflow-timeline .glass-card {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .workflow-timeline .glass-card::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: #C0A060;
+    border-radius: 50%;
+    border: 3px solid #F4F8FA;
+    box-shadow: 0 0 0 2px #C0A060;
+  }
+  
+  /* Pricingカードの最適化 */
+  .pricing-card-mobile {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .pricing-card-details-mobile {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+  }
+  
+  .pricing-card-details-mobile.open {
+    max-height: 500px;
+    padding-top: 1rem;
+  }
+  
+  /* ヘッダーのモバイル調整 */
+  .mobile-nav-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(244, 248, 250, 0.98);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .mobile-nav-menu.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* テキストサイズの調整 */
+  h1 {
+    @apply text-3xl;
+  }
+  
+  h2 {
+    @apply text-2xl;
+  }
+  
+  h3 {
+    @apply text-xl;
+  }
+  
+  /* グリッドの1カラム化 */
+  .mobile-single-column {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* カードの横スクロール */
+  .mobile-horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .mobile-horizontal-scroll > * {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+  
+  .mobile-horizontal-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .mobile-horizontal-scroll::-webkit-scrollbar-track {
+    background: rgba(43, 58, 66, 0.1);
+    border-radius: 2px;
+  }
+  
+  .mobile-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(192, 160, 96, 0.5);
+    border-radius: 2px;
+  }
+  
+  /* ボタンのタッチフレンドリー化 */
+  .touch-friendly {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* フッターのスタック化 */
+  .footer-mobile {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  /* マウスストーカーを非表示 */
+  .mouse-stalker-main,
+  .mouse-stalker-ring,
+  .mouse-stalker-trail {
+    display: none !important;
+  }
+}
+
+/* Reset workflow timeline for desktop */
+@media (min-width: 769px) {
+  .workflow-timeline-reset {
+    padding-left: 0;
+  }
+  
+  .workflow-timeline-reset::before {
+    display: none;
+  }
+  
+  .workflow-timeline-reset .glass-card::before {
+    display: none;
+  }
+}
+
+/* ===== Tablet Responsive Styles (768px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .section {
+    @apply py-16;
+  }
+  
+  /* 2カラムグリッドの調整 */
+  .tablet-two-column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

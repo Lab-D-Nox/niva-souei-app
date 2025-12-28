@@ -331,7 +331,7 @@ export default function Home() {
           </div>
 
           {/* Featured Works by Tier */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-sm:mobile-horizontal-scroll max-sm:grid-cols-none">
             {/* Tier 1: Droplet */}
             <div className="glass-card p-6 hover-lift">
               <div className="badge-tier-1 inline-block px-3 py-1 rounded-full text-xs font-medium mb-4">
@@ -397,7 +397,7 @@ export default function Home() {
           </div>
 
           {/* 5 Tier Cards Preview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12 max-sm:mobile-horizontal-scroll max-sm:grid-cols-none">
             {[
               { tier: 1, name: "Droplet", label: "雫", price: "¥50,000〜", desc: "モーション・アイデンティティ" },
               { tier: 2, name: "Ripple", label: "波紋", price: "¥150,000〜", desc: "SNS特化型ショート" },

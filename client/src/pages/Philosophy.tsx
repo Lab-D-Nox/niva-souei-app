@@ -225,7 +225,7 @@ export default function Philosophy() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 workflow-timeline md:workflow-timeline-reset">
             {/* Step 1 */}
             <div className="glass-card p-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
