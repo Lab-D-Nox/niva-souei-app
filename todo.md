@@ -120,3 +120,6 @@
 
 ## 使用ツールページの更新
 - [x] 画像生成セクションに新しいツールを追加（GPT-4o、Seedream、Flux、Mystic、NanobananaPro、Reve、Z-image、Ideogram、Runway、Lovart、Dremina）
+
+## テキストツールの追加
+- [x] テキストカテゴリにGemini、Grok、Qwen、Manusを追加

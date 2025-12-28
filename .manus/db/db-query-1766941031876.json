@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Gemini', 'Google DeepMindの最新AI。マルチモーダル対応で高度な推論が可能。', 'https://gemini.google.com', 'text', true, NOW()),\n('Grok', 'xAIの対話型AI。リアルタイム情報へのアクセスが特徴。', 'https://grok.x.ai', 'text', true, NOW()),\n('Qwen', 'Alibabaの大規模言語モデル。多言語対応に優れる。', 'https://qwenlm.github.io', 'text', true, NOW()),\n('Manus', '自律型AIエージェント。複雑なタスクを自動で実行。', 'https://manus.im', 'text', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Gemini', 'Google DeepMindの最新AI。マルチモーダル対応で高度な推論が可能。', 'https://gemini.google.com', 'text', true, NOW()),\n('Grok', 'xAIの対話型AI。リアルタイム情報へのアクセスが特徴。', 'https://grok.x.ai', 'text', true, NOW()),\n('Qwen', 'Alibabaの大規模言語モデル。多言語対応に優れる。', 'https://qwenlm.github.io', 'text', true, NOW()),\n('Manus', '自律型AIエージェント。複雑なタスクを自動で実行。', 'https://manus.im', 'text', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1530
+}
