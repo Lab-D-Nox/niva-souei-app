@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink, Send, CheckCircle2 } from "lucide-react";
+import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink, Send, CheckCircle2, X } from "lucide-react";
 import { useSearch } from "wouter";
 
 const LINE_URL = "https://lin.ee/nJQQAw41";
@@ -462,7 +462,19 @@ export default function Contact() {
                     参考URL
                   </Label>
                   {refWorkUrl && (
-                    <div className="mb-3 p-3 bg-gold/10 border border-gold/30 rounded-lg">
+                    <div className="mb-3 p-3 bg-gold/10 border border-gold/30 rounded-lg relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRefWorkUrl(null);
+                          setRefWorkTitle(null);
+                          setReferenceUrls("");
+                        }}
+                        className="absolute top-2 right-2 p-1 rounded-full bg-[#2B3A42]/10 hover:bg-[#2B3A42]/20 transition-colors"
+                        title="参考作品を削除"
+                      >
+                        <X className="h-4 w-4 text-[#2B3A42]/70" />
+                      </button>
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 className="h-5 w-5 text-gold" />
                         <span className="text-sm font-medium text-gold">参考作品が選択されました</span>

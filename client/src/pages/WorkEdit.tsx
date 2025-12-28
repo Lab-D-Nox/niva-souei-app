@@ -414,11 +414,11 @@ export default function WorkEdit() {
             {/* Prompt */}
             <div className="bg-card rounded-xl p-6 border border-border/50">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium">プロンプト</h2>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="prompt-visibility" className="text-sm">
-                    公開する
-                  </Label>
+                <h2 className="text-lg font-medium">プロンプト設定</h2>
+                <div className="flex items-center gap-3 bg-muted/50 px-4 py-2 rounded-lg">
+                  <span className="text-sm text-muted-foreground">
+                    {promptVisibility ? '🔓 公開' : '🔒 非公開'}
+                  </span>
                   <Switch
                     id="prompt-visibility"
                     checked={promptVisibility}
@@ -426,25 +426,46 @@ export default function WorkEdit() {
                   />
                 </div>
               </div>
+              
+              {/* Visibility explanation */}
+              <div className={`mb-4 p-3 rounded-lg text-sm ${promptVisibility ? 'bg-gold/10 border border-gold/30' : 'bg-muted/50 border border-border'}`}>
+                {promptVisibility ? (
+                  <p className="text-gold">
+                    ✅ プロンプトは公開されます。他のユーザーがプロンプトを確認・コピーできます。
+                  </p>
+                ) : (
+                  <p className="text-muted-foreground">
+                    🔒 プロンプトは非公開です。他のユーザーには「ロックされています」と表示されます。
+                  </p>
+                )}
+              </div>
+              
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="promptText">プロンプト</Label>
+                  <Label htmlFor="promptText" className="flex items-center gap-2">
+                    <span className="text-gold">Positive</span> プロンプト
+                  </Label>
                   <Textarea
                     id="promptText"
                     value={promptText}
                     onChange={(e) => setPromptText(e.target.value)}
-                    placeholder="使用したプロンプト"
+                    placeholder="使用したプロンプトを入力..."
                     className="mt-1 font-mono text-sm"
                     rows={4}
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    空欄の場合、「プロンプト未設定」と表示されます
+                  </p>
                 </div>
                 <div>
-                  <Label htmlFor="negativePrompt">ネガティブプロンプト</Label>
+                  <Label htmlFor="negativePrompt" className="flex items-center gap-2">
+                    <span className="text-destructive/70">Negative</span> プロンプト
+                  </Label>
                   <Textarea
                     id="negativePrompt"
                     value={negativePrompt}
                     onChange={(e) => setNegativePrompt(e.target.value)}
-                    placeholder="ネガティブプロンプト"
+                    placeholder="ネガティブプロンプトを入力..."
                     className="mt-1 font-mono text-sm"
                     rows={3}
                   />

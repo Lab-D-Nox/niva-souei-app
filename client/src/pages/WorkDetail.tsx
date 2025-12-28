@@ -47,6 +47,10 @@ import {
   Loader2,
   Trash2,
   Pencil,
+  Wrench,
+  Lock,
+  Unlock,
+  FileQuestion,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -92,6 +96,7 @@ export default function WorkDetail() {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+  const [showTools, setShowTools] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState<number | null>(null);
   const [localLiked, setLocalLiked] = useState<boolean | null>(null);
 
@@ -427,6 +432,18 @@ export default function WorkDetail() {
                   シェア
                 </Button>
                 
+                {/* Show used AI tools button */}
+                {work.tools && work.tools.length > 0 && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowTools(!showTools)}
+                    className={cn(showTools && "bg-gold/10 border-gold/30")}
+                  >
+                    <Wrench className="h-4 w-4 mr-2" />
+                    使用AIツールを見る
+                  </Button>
+                )}
+                
                 {/* Edit/Delete buttons for owner */}
                 {user && work.owner && (user.id === work.owner.id || user.role === 'admin') && (
                   <>
@@ -465,29 +482,83 @@ export default function WorkDetail() {
                 )}
               </div>
 
-              {/* Prompt Section */}
-              {work.promptText && (
-                <div className="bg-card rounded-xl p-6 border border-border/50 mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">プロンプト</h3>
+              {/* Used AI Tools Section (shown when button clicked) */}
+              {showTools && work.tools && work.tools.length > 0 && (
+                <div className="mb-8 p-4 bg-gold/5 border border-gold/20 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  <h3 className="font-medium mb-3 text-sm text-gold">この作品に使用されたAIツール</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {work.tools.map((tool: any) => (
+                      <Link
+                        key={tool.id}
+                        href={`/tools#tool-${tool.id}`}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/80 border border-gold/30 rounded-full text-sm hover:bg-gold/10 hover:border-gold/50 transition-colors text-foreground shadow-sm"
+                      >
+                        {tool.iconUrl && (
+                          <img src={tool.iconUrl} alt="" className="w-4 h-4 rounded" />
+                        )}
+                        <span className="text-gold font-medium">#</span>
+                        {tool.name}
+                      </Link>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    タグをクリックするとツールの詳細ページに移動します
+                  </p>
+                </div>
+              )}
+
+              {/* Prompt Section - 3 states: public, private, not set */}
+              <div className="bg-card rounded-xl p-6 border border-border/50 mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-medium flex items-center gap-2">
+                    {work.promptText ? (
+                      work.promptVisibility === 'public' ? (
+                        <><Unlock className="h-4 w-4 text-gold" /> プロンプト公開</>
+                      ) : (
+                        <><Lock className="h-4 w-4 text-muted-foreground" /> プロンプト非公開</>
+                      )
+                    ) : (
+                      <><FileQuestion className="h-4 w-4 text-muted-foreground" /> プロンプト未設定</>
+                    )}
+                  </h3>
+                  {work.promptText && work.promptVisibility === 'public' && (
                     <Button variant="ghost" size="sm" onClick={copyPrompt}>
                       <Copy className="h-4 w-4 mr-2" />
                       コピー
                     </Button>
-                  </div>
-                  <pre className="text-sm bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
-                    {work.promptText}
-                  </pre>
-                  {work.negativePrompt && (
-                    <>
-                      <h4 className="font-medium mt-4 mb-2 text-sm">Negative Prompt</h4>
-                      <pre className="text-sm bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
-                        {work.negativePrompt}
-                      </pre>
-                    </>
                   )}
                 </div>
-              )}
+                
+                {!work.promptText ? (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <FileQuestion className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">この作品にはプロンプトが設定されていません</p>
+                  </div>
+                ) : work.promptVisibility === 'private' ? (
+                  <div className="text-center py-6 bg-muted/50 rounded-lg">
+                    <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">このプロンプトはロックされています</p>
+                    <p className="text-xs text-muted-foreground mt-1">投稿者により非公開に設定されています</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <h4 className="text-xs font-medium text-gold mb-2 uppercase tracking-wider">Positive Prompt</h4>
+                      <pre className="text-sm bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+                        {work.promptText}
+                      </pre>
+                    </div>
+                    {work.negativePrompt && (
+                      <div>
+                        <h4 className="text-xs font-medium text-destructive/70 mb-2 uppercase tracking-wider">Negative Prompt</h4>
+                        <pre className="text-sm bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+                          {work.negativePrompt}
+                        </pre>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
 
               {/* Tags */}
               {work.tags && work.tags.length > 0 && (
