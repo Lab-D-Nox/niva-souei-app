@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, Sparkles, Copy, MessageCircle, ExternalLink } from "lucide-react";
 
-const LINE_URL = "https://lin.ee/H5pfvuh";
+const LINE_URL = "https://lin.ee/nJQQAw41";
 
 const inquiryTypeOptions = [
   { value: "spot", label: "Spot Concept（スポット現像）" },

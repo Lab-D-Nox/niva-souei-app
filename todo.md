@@ -97,3 +97,7 @@
 - [x] Spot Concept: ¥10,000〜 → ¥100,000〜
 - [x] Standard Translation: ¥50,000〜 → ¥200,000〜
 - [x] Grand Story: ¥200,000〜 → ¥1,000,000〜
+
+## 公式LINEリンク変更
+- [x] SNSリンク集ページのLINEリンクを https://lin.ee/nJQQAw41 に変更
+- [x] お問い合わせフォームのLINEリンクを https://lin.ee/nJQQAw41 に変更
