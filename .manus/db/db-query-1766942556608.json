@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Claude Code', 'AnthropicのAIコーディングアシスタント。高度なコード生成・レビューが可能。', 'https://claude.ai', 'coding', true, NOW()),\n('Cursor', 'AIネイティブなコードエディタ。コード補完・生成に特化。', 'https://cursor.sh', 'coding', true, NOW()),\n('Antigravity', 'AIコーディング支援ツール。', NULL, 'coding', true, NOW()),\n('Codex', 'OpenAIのコード生成AI。自然言語からコードを生成。', 'https://openai.com/blog/openai-codex', 'coding', true, NOW()),\n('Manus Code', 'Manusの自律型AIエージェント。複雑なコーディングタスクを自動実行。', 'https://manus.im', 'coding', true, NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3N6AyHfeMwffHZA.1f5aae3b473b --database hbV4fKhCmDvy4kB3wCvGcx --execute INSERT INTO tools (name, description, url, category, isActive, createdAt) VALUES\n('Claude Code', 'AnthropicのAIコーディングアシスタント。高度なコード生成・レビューが可能。', 'https://claude.ai', 'coding', true, NOW()),\n('Cursor', 'AIネイティブなコードエディタ。コード補完・生成に特化。', 'https://cursor.sh', 'coding', true, NOW()),\n('Antigravity', 'AIコーディング支援ツール。', NULL, 'coding', true, NOW()),\n('Codex', 'OpenAIのコード生成AI。自然言語からコードを生成。', 'https://openai.com/blog/openai-codex', 'coding', true, NOW()),\n('Manus Code', 'Manusの自律型AIエージェント。複雑なコーディングタスクを自動実行。', 'https://manus.im', 'coding', true, NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1530
+}

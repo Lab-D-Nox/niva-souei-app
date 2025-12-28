@@ -135,3 +135,6 @@
 
 ## 画像生成ツールの追加（追加）
 - [x] 画像生成カテゴリにGoogle Imagen 4を追加
+
+## コーディングカテゴリの追加
+- [x] コーディングカテゴリにClaude Code、Cursor、Antigravity、Codex、Manus Codeを追加
