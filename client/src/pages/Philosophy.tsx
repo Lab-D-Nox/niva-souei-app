@@ -223,74 +223,85 @@ export default function Philosophy() {
             </h2>
           </div>
 
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Step 1 */}
-            <div className="glass-card p-8 relative overflow-hidden">
+            <div className="glass-card p-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-gold font-serif text-xl">1</span>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gold font-serif text-lg font-bold">1</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">ヒアリング</h3>
-                  <p className="text-[#5A6B75] leading-relaxed">
-                    クライアントの想いに寄り添い、時にはクライアント自身も気づいていない
-                    本当の意図を引き出します。「こんな感じで」という曖昧なイメージを、
-                    「これが伝えたかったことだ」という確信に変える第一歩です。
+                  <h3 className="text-lg font-serif font-bold text-[#2B3A42] mb-2">ヒアリング</h3>
+                  <p className="text-sm text-[#5A6B75] leading-relaxed">
+                    クライアントの想いに寄り添い、時にはクライアント自身も気づいていない本当の意図を引き出します。「こんな感じで」という曖昧なイメージを、「これが伝えたかったことだ」という確信に変える第一歩です。
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="glass-card p-8 relative overflow-hidden">
+            <div className="glass-card p-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#5B8A9A] to-transparent" />
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-full bg-[#5B8A9A]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#5B8A9A] font-serif text-xl">2</span>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#5B8A9A]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#5B8A9A] font-serif text-lg font-bold">2</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">コンセプト設計</h3>
-                  <p className="text-[#5A6B75] leading-relaxed">
-                    音・映像・物語の三要素をどう組み合わせるか。
-                    ムードボードや絵コンテを通じて、完成形のビジョンを共有します。
-                    この段階で「同期」のポイントを明確にします。
+                  <h3 className="text-lg font-serif font-bold text-[#2B3A42] mb-2">コンセプト設計</h3>
+                  <p className="text-sm text-[#5A6B75] leading-relaxed">
+                    音・映像・物語の三要素をどう組み合わせるか。ムードボードや絵コンテを通じて、完成形のビジョンを共有します。この段階で「同期」のポイントを明確にします。
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="glass-card p-8 relative overflow-hidden">
+            <div className="glass-card p-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#7A9E7E] to-transparent" />
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-full bg-[#7A9E7E]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#7A9E7E] font-serif text-xl">3</span>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#7A9E7E]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#7A9E7E] font-serif text-lg font-bold">3</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">制作・翻訳</h3>
-                  <p className="text-[#5A6B75] leading-relaxed">
-                    複数のAIツールを組み合わせ、それぞれの強みを活かし、
-                    時には手作業で調整を加えながら、「伝わる」表現を追求します。
-                    AIは「想いを形にするための最高の道具」として活用します。
+                  <h3 className="text-lg font-serif font-bold text-[#2B3A42] mb-2">制作・翻訳</h3>
+                  <p className="text-sm text-[#5A6B75] leading-relaxed">
+                    複数のAIツールを組み合わせ、それぞれの強みを活かし、時には手作業で調整を加えながら、「伝わる」表現を追求します。AIは「想いを形にするための最高の道具」として活用します。
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Step 4 */}
-            <div className="glass-card p-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-gold font-serif text-xl">4</span>
+            {/* Step 4 - NEW! */}
+            <div className="glass-card p-6 relative overflow-hidden border-2 border-gold/30">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#9A7B8A] to-transparent" />
+              <div className="absolute top-2 right-2">
+                <span className="text-xs bg-gold/20 text-gold px-2 py-1 rounded-full font-medium">CORE</span>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#9A7B8A]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#9A7B8A] font-serif text-lg font-bold">4</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-serif text-[#2B3A42] mb-2">納品・波紋</h3>
-                  <p className="text-[#5A6B75] leading-relaxed">
-                    完成した作品をお届けし、その波紋があなたのビジネスや表現活動に
-                    広がっていくのを見届けます。必要に応じて、各プラットフォームへの
-                    最適化もサポートします。
+                  <h3 className="text-lg font-serif font-bold text-[#2B3A42] mb-2">調律・編集</h3>
+                  <p className="text-sm text-[#5A6B75] leading-relaxed">
+                    ここが品質の分かれ目です。生成された素材を、0.1秒単位で音の波形に同期させます。映像のカット割り、BGMの余韻、SEのタイミングを徹底的に調整し、生理的な心地よさと没入感を生み出します。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 5 - 中央寄せ */}
+            <div className="glass-card p-6 relative overflow-hidden md:col-span-2 md:max-w-lg md:mx-auto">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold to-transparent" />
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gold font-serif text-lg font-bold">5</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-serif font-bold text-[#2B3A42] mb-2">納品・波紋</h3>
+                  <p className="text-sm text-[#5A6B75] leading-relaxed">
+                    完成した作品をお届けし、その波紋があなたのビジネスや表現活動に広がっていくのを見届けます。必要に応じて、各プラットフォームへの最適化もサポートします。
                   </p>
                 </div>
               </div>

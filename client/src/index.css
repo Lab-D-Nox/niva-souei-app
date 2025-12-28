@@ -115,7 +115,7 @@ html {
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Zen Kaku Gothic New", system-ui, sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     font-feature-settings: "kern" 1, "liga" 1;
   }
   button:not(:disabled),
@@ -133,7 +133,7 @@ html {
   /* Typography - Shippori Mincho for headings */
   h1, h2, h3, h4, h5, h6 {
     font-family: "Shippori Mincho", serif;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.02em;
     color: #2B3A42;
   }

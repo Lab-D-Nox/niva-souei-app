@@ -128,52 +128,53 @@ function ConceptDiagram() {
       ref={diagramReveal.ref}
       className={`relative w-full max-w-md mx-auto transition-all duration-1000 ${diagramReveal.isVisible ? 'opacity-100' : 'opacity-0'}`}
     >
-      <svg viewBox="0 0 400 300" className="w-full h-auto">
-        {/* Input lines */}
-        <g className={diagramReveal.isVisible ? 'diagram-line' : ''}>
-          {/* Sound line */}
-          <line x1="50" y1="80" x2="200" y2="150" stroke="#C0A060" strokeWidth="2" strokeDasharray="100" />
-          {/* Visual line */}
-          <line x1="50" y1="150" x2="200" y2="150" stroke="#5B8A9A" strokeWidth="2" strokeDasharray="100" style={{ animationDelay: '0.3s' }} />
-          {/* Story line */}
-          <line x1="50" y1="220" x2="200" y2="150" stroke="#7A9E7E" strokeWidth="2" strokeDasharray="100" style={{ animationDelay: '0.6s' }} />
-        </g>
-        
-        {/* Input icons */}
-        <g className="fill-[#2B3A42]">
-          <circle cx="50" cy="80" r="25" fill="rgba(192, 160, 96, 0.2)" stroke="#C0A060" strokeWidth="1" />
-          <text x="50" y="85" textAnchor="middle" fontSize="12" fill="#C0A060">耳</text>
-          
-          <circle cx="50" cy="150" r="25" fill="rgba(91, 138, 154, 0.2)" stroke="#5B8A9A" strokeWidth="1" />
-          <text x="50" y="155" textAnchor="middle" fontSize="12" fill="#5B8A9A">目</text>
-          
-          <circle cx="50" cy="220" r="25" fill="rgba(122, 158, 126, 0.2)" stroke="#7A9E7E" strokeWidth="1" />
-          <text x="50" y="225" textAnchor="middle" fontSize="12" fill="#7A9E7E">脳</text>
-        </g>
-        
-        {/* Sync point */}
-        <circle cx="200" cy="150" r="15" fill="#C0A060" className="float" />
-        <text x="200" y="155" textAnchor="middle" fontSize="10" fill="#F4F8FA" fontWeight="500">Sync</text>
-        
-        {/* Output ripples */}
-        <g className={diagramReveal.isVisible ? '' : 'opacity-0'}>
-          <circle cx="320" cy="150" r="30" fill="none" stroke="rgba(192, 160, 96, 0.5)" strokeWidth="1" className="float" style={{ animationDelay: '0.2s' }} />
-          <circle cx="320" cy="150" r="50" fill="none" stroke="rgba(192, 160, 96, 0.3)" strokeWidth="1" className="float" style={{ animationDelay: '0.4s' }} />
-          <circle cx="320" cy="150" r="70" fill="none" stroke="rgba(192, 160, 96, 0.15)" strokeWidth="1" className="float" style={{ animationDelay: '0.6s' }} />
-        </g>
-        
-        {/* Output arrow */}
-        <line x1="215" y1="150" x2="280" y2="150" stroke="#C0A060" strokeWidth="2" markerEnd="url(#arrowhead)" />
+      <svg viewBox="0 0 450 300" className="w-full h-auto">
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill="#C0A060" />
           </marker>
         </defs>
         
-        {/* Labels */}
-        <text x="50" y="260" textAnchor="middle" fontSize="11" fill="#5A6B75">Input</text>
-        <text x="200" y="190" textAnchor="middle" fontSize="11" fill="#5A6B75">Sync Point</text>
-        <text x="320" y="240" textAnchor="middle" fontSize="11" fill="#5A6B75">Emotion</text>
+        {/* Input lines - 背面に配置（円の端からスタート） */}
+        <g className={diagramReveal.isVisible ? 'diagram-line' : ''}>
+          {/* Sound line - 円の端（x=75）からスタート */}
+          <line x1="75" y1="80" x2="205" y2="150" stroke="#C0A060" strokeWidth="2" strokeDasharray="100" />
+          {/* Visual line */}
+          <line x1="75" y1="150" x2="205" y2="150" stroke="#5B8A9A" strokeWidth="2" strokeDasharray="100" style={{ animationDelay: '0.3s' }} />
+          {/* Story line */}
+          <line x1="75" y1="220" x2="205" y2="150" stroke="#7A9E7E" strokeWidth="2" strokeDasharray="100" style={{ animationDelay: '0.6s' }} />
+        </g>
+        
+        {/* Output arrow - 背面に配置 */}
+        <line x1="240" y1="150" x2="310" y2="150" stroke="#C0A060" strokeWidth="2" markerEnd="url(#arrowhead)" />
+        
+        {/* Input icons - 前面に配置（円を大きく、テキストを太字・大きく） */}
+        <g>
+          <circle cx="50" cy="80" r="28" fill="rgba(192, 160, 96, 0.25)" stroke="#C0A060" strokeWidth="2" />
+          <text x="50" y="88" textAnchor="middle" fontSize="18" fontWeight="700" fill="#C0A060">耳</text>
+          
+          <circle cx="50" cy="150" r="28" fill="rgba(91, 138, 154, 0.25)" stroke="#5B8A9A" strokeWidth="2" />
+          <text x="50" y="158" textAnchor="middle" fontSize="18" fontWeight="700" fill="#5B8A9A">目</text>
+          
+          <circle cx="50" cy="220" r="28" fill="rgba(122, 158, 126, 0.25)" stroke="#7A9E7E" strokeWidth="2" />
+          <text x="50" y="228" textAnchor="middle" fontSize="18" fontWeight="700" fill="#7A9E7E">脳</text>
+        </g>
+        
+        {/* Sync point - 前面に配置 */}
+        <circle cx="220" cy="150" r="18" fill="#C0A060" className="float" />
+        <text x="220" y="155" textAnchor="middle" fontSize="11" fill="#F4F8FA" fontWeight="700">Sync</text>
+        
+        {/* Output ripples - 前面に配置 */}
+        <g className={diagramReveal.isVisible ? '' : 'opacity-0'}>
+          <circle cx="360" cy="150" r="35" fill="none" stroke="rgba(192, 160, 96, 0.5)" strokeWidth="1.5" className="float" style={{ animationDelay: '0.2s' }} />
+          <circle cx="360" cy="150" r="55" fill="none" stroke="rgba(192, 160, 96, 0.3)" strokeWidth="1" className="float" style={{ animationDelay: '0.4s' }} />
+          <circle cx="360" cy="150" r="75" fill="none" stroke="rgba(192, 160, 96, 0.15)" strokeWidth="1" className="float" style={{ animationDelay: '0.6s' }} />
+        </g>
+        
+        {/* Labels - フォントを太く */}
+        <text x="50" y="265" textAnchor="middle" fontSize="12" fontWeight="600" fill="#5A6B75">Input</text>
+        <text x="220" y="195" textAnchor="middle" fontSize="12" fontWeight="600" fill="#5A6B75">Sync Point</text>
+        <text x="360" y="245" textAnchor="middle" fontSize="12" fontWeight="600" fill="#5A6B75">Emotion</text>
       </svg>
     </div>
   );
