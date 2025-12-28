@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Music, Video, BookOpen, Droplets } from "lucide-react";
+import { ArrowRight, Music, Video, BookOpen, Droplets, Sparkles, Workflow } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
 // Scroll reveal hook
@@ -145,7 +145,8 @@ export default function Philosophy() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Philosophy
             </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2B3A42] mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2B3A42] mb-6 flex items-center justify-center gap-4">
+              <Sparkles className="h-10 w-10 md:h-12 md:w-12 text-gold" />
               Nivaの想映
             </h1>
             <p className="text-xl text-[#5A6B75] leading-relaxed">
@@ -218,7 +219,8 @@ export default function Philosophy() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Process
             </p>
-            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42]">
+            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Workflow className="h-8 w-8 md:h-9 md:w-9 text-gold" />
               ワンストップ・クリエーション
             </h2>
           </div>

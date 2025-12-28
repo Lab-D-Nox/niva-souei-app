@@ -221,3 +221,13 @@
 - [x] Philosophyセクション: 円内アイコンのフォントサイズを上げ、太字に
 - [x] Workflowセクション: 4ステップ→5ステップに変更（調律・編集を追加）
 - [x] Workflowセクション: 5つ目の要素を中央寄せにレイアウト調整
+
+## セクションタイトルにアイコンを追加
+- [x] ホームページ: Philosophy（想映とは）セクションにアイコン追加（Sparkles）
+- [x] ホームページ: Works（制作実績）セクションにアイコン追加（Palette）
+- [x] ホームページ: Services（料金プラン）セクションにアイコン追加（Coins）
+- [x] Philosophyページ: 各セクションにアイコン追加（Sparkles, Workflow）
+- [x] Servicesページ: 各セクションにアイコン追加（Coins, Workflow, Layers）
+- [x] Worksページ: タイトルにアイコン追加（Palette）
+- [x] Toolsページ: タイトルにアイコン追加（Wrench）
+- [x] Contactページ: タイトルにアイコン追加（Send）

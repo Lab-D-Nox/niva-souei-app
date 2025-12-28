@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/Layout";
 import { WorkCard, WorkCardSkeleton } from "@/components/WorkCard";
 import { trpc } from "@/lib/trpc";
-import { ArrowRight, Ear, Eye, Brain, ChevronDown } from "lucide-react";
+import { ArrowRight, Ear, Eye, Brain, ChevronDown, Sparkles, Palette, Coins } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 
 // Caustics background - water surface effect
@@ -265,7 +265,8 @@ export default function Home() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Philosophy
             </p>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#2B3A42]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Sparkles className="h-8 w-8 md:h-10 md:w-10 text-gold" />
               想映とは
             </h2>
           </div>
@@ -323,7 +324,10 @@ export default function Home() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Works
             </p>
-            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42]">制作実績</h2>
+            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Palette className="h-7 w-7 md:h-9 md:w-9 text-gold" />
+              制作実績
+            </h2>
           </div>
 
           {/* Featured Works by Tier */}
@@ -386,7 +390,10 @@ export default function Home() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Service & Pricing
             </p>
-            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42]">料金プラン</h2>
+            <h2 className="text-3xl md:text-4xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Coins className="h-7 w-7 md:h-9 md:w-9 text-gold" />
+              料金プラン
+            </h2>
           </div>
 
           {/* 5 Tier Cards Preview */}

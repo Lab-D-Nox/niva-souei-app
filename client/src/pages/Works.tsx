@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Search, X, Filter, SlidersHorizontal } from "lucide-react";
+import { Search, X, Filter, SlidersHorizontal, Palette } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -206,7 +206,10 @@ export default function Works() {
             <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase mb-2">
               Works
             </p>
-            <h1 className="text-3xl md:text-4xl font-light text-primary">作品一覧</h1>
+            <h1 className="text-3xl md:text-4xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Palette className="h-8 w-8 md:h-9 md:w-9 text-gold" />
+              作品一覧
+            </h1>
           </div>
 
           {/* Search and Filters */}

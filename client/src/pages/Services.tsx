@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Check, ChevronDown, ChevronUp, Info, X, Palette, Type, Youtube, RefreshCw, Monitor, Smartphone, Zap, Package, Music, Gift, Globe, ShoppingBag, Building, Tv, Mic, Eye, Tent, Users, BookOpen, Flame, Film, Cake, MapPin, Rocket, RotateCcw, HelpCircle } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ChevronUp, Info, X, Palette, Type, Youtube, RefreshCw, Monitor, Smartphone, Zap, Package, Music, Gift, Globe, ShoppingBag, Building, Tv, Mic, Eye, Tent, Users, BookOpen, Flame, Film, Cake, MapPin, Rocket, RotateCcw, HelpCircle, Coins, Layers, Workflow } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 // 5 Tier Plans based on Ver.5.0 specification
@@ -295,7 +295,8 @@ export default function Services() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               Service & Pricing
             </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2B3A42] mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2B3A42] mb-6 flex items-center justify-center gap-4">
+              <Coins className="h-10 w-10 md:h-12 md:w-12 text-gold" />
               料金プラン
             </h1>
             <p className="text-lg text-[#5A6B75] leading-relaxed mb-8">
@@ -321,7 +322,10 @@ export default function Services() {
         >
           <div className="text-center mb-12">
             <p className="text-sm font-medium tracking-[0.2em] text-gold uppercase mb-2">Sound Driven Workflow</p>
-            <h2 className="text-2xl md:text-3xl font-serif text-[#2B3A42]">Niva独自の「音から作る」フロー</h2>
+            <h2 className="text-2xl md:text-3xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Workflow className="h-7 w-7 md:h-8 md:w-8 text-gold" />
+              Niva独自の「音から作る」フロー
+            </h2>
           </div>
           
           <div className="max-w-4xl mx-auto">
@@ -396,7 +400,10 @@ export default function Services() {
         >
           <div className="text-center mb-12">
             <p className="text-sm font-medium tracking-[0.2em] text-gold uppercase mb-2">5 Tier Structure</p>
-            <h2 className="text-2xl md:text-3xl font-serif text-[#2B3A42]">プロジェクトの規模に合わせた5つのプラン</h2>
+            <h2 className="text-2xl md:text-3xl font-serif text-[#2B3A42] flex items-center justify-center gap-3">
+              <Layers className="h-7 w-7 md:h-8 md:w-8 text-gold" />
+              プロジェクトの規模に合わせた5つのプラン
+            </h2>
           </div>
           
           <div className="space-y-8">

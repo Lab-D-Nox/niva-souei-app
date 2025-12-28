@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, Wrench } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect, useRef, useState } from "react";
 
@@ -79,7 +79,10 @@ export default function Tools() {
             <p className="text-sm font-medium tracking-[0.3em] text-gold uppercase mb-4">
               AI Tools Arsenal
             </p>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light gradient-text mb-6">使用AIツール</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#2B3A42] mb-6 flex items-center justify-center gap-4">
+              <Wrench className="h-8 w-8 md:h-10 md:w-10 text-gold" />
+              使用AIツール
+            </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Nivaの想映で使用しているAIツールの一覧です。
               各ツールの特徴を活かし、最適な表現を追求しています。
