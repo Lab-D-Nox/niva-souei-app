@@ -45,9 +45,11 @@ const originOptions = [
 
 const serviceTierOptions = [
   { value: "none", label: "なし" },
-  { value: "spot", label: "Spot Concept" },
-  { value: "standard", label: "Standard Translation" },
-  { value: "grand", label: "Grand Story" },
+  { value: "tier1", label: "Tier 1: Droplet（雫）- ¥50,000〜" },
+  { value: "tier2", label: "Tier 2: Ripple（波紋）- ¥150,000〜" },
+  { value: "tier3", label: "Tier 3: Stream（水流）- ¥300,000〜" },
+  { value: "tier4", label: "Tier 4: Deep（深海）- ¥600,000〜" },
+  { value: "tier5", label: "Tier 5: Genesis（源泉）- ¥1,000,000〜" },
 ];
 
 export default function WorkEdit() {
@@ -200,7 +202,7 @@ export default function WorkEdit() {
         title,
         description: description || undefined,
         origin: origin as "personal" | "client",
-        serviceTier: serviceTier === "none" ? undefined : (serviceTier as "spot" | "standard" | "grand"),
+        serviceTier: serviceTier === "none" ? undefined : (serviceTier as "tier1" | "tier2" | "tier3" | "tier4" | "tier5"),
         promptText: promptText || undefined,
         negativePrompt: negativePrompt || undefined,
         promptVisibility: promptVisibility ? "public" : "private",

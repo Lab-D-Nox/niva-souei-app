@@ -21,7 +21,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 const workTypeEnum = z.enum(["image", "video", "audio", "text", "web"]);
 const audioSubtypeEnum = z.enum(["music", "bgm", "voice", "sfx", "podcast"]);
 const originEnum = z.enum(["client", "personal"]);
-const serviceTierEnum = z.enum(["spot", "standard", "grand"]);
+const serviceTierEnum = z.enum(["tier1", "tier2", "tier3", "tier4", "tier5"]);
 const promptVisibilityEnum = z.enum(["public", "private"]);
 
 export const appRouter = router({

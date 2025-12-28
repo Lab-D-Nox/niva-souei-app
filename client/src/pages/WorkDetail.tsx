@@ -59,10 +59,20 @@ const typeLabels: Record<string, string> = {
   web: "Webサイト",
 };
 
-const serviceTierLabels: Record<string, string> = {
-  spot: "Spot Concept",
-  standard: "Standard Translation",
-  grand: "Grand Story",
+const serviceTierLabels: Record<string, { name: string; japanese: string; price: string }> = {
+  tier1: { name: "Droplet", japanese: "雫", price: "¥50,000〜" },
+  tier2: { name: "Ripple", japanese: "波紋", price: "¥150,000〜" },
+  tier3: { name: "Stream", japanese: "水流", price: "¥300,000〜" },
+  tier4: { name: "Deep", japanese: "深海", price: "¥600,000〜" },
+  tier5: { name: "Genesis", japanese: "源泉", price: "¥1,000,000〜" },
+};
+
+const tierColors: Record<string, string> = {
+  tier1: "bg-sky-100 text-sky-800 border-sky-200",
+  tier2: "bg-teal-100 text-teal-800 border-teal-200",
+  tier3: "bg-blue-100 text-blue-800 border-blue-200",
+  tier4: "bg-indigo-100 text-indigo-800 border-indigo-200",
+  tier5: "bg-gold/20 text-gold border-gold/30",
 };
 
 // Generate a fingerprint for anonymous likes
@@ -365,12 +375,11 @@ export default function WorkDetail() {
                     <Badge
                       variant="outline"
                       className={cn(
-                        work.serviceTier === "spot" && "badge-spot",
-                        work.serviceTier === "standard" && "badge-standard",
-                        work.serviceTier === "grand" && "badge-grand"
+                        "font-medium",
+                        tierColors[work.serviceTier]
                       )}
                     >
-                      {serviceTierLabels[work.serviceTier]}
+                      Tier {work.serviceTier.replace("tier", "")}: {serviceTierLabels[work.serviceTier].name}（{serviceTierLabels[work.serviceTier].japanese}）
                     </Badge>
                   )}
                 </div>

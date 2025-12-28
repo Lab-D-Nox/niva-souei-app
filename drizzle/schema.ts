@@ -36,7 +36,7 @@ export const works = mysqlTable("works", {
   textContent: text("textContent"),
   // Work classification
   origin: mysqlEnum("origin", ["client", "personal"]).default("personal").notNull(),
-  serviceTier: mysqlEnum("serviceTier", ["spot", "standard", "grand"]),
+  serviceTier: mysqlEnum("serviceTier", ["tier1", "tier2", "tier3", "tier4", "tier5"]),
   // Prompt information
   promptText: text("promptText"),
   negativePrompt: text("negativePrompt"),
