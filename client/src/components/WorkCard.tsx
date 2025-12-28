@@ -57,25 +57,40 @@ function isVideoUrl(url: string): boolean {
   return videoExtensions.some(ext => lowerUrl.includes(ext));
 }
 
-// Component to extract video first frame as thumbnail
-function VideoThumbnail({ src, alt }: { src: string; alt: string }) {
+// Video preview component with hover autoplay
+function VideoPreview({ 
+  src, 
+  alt, 
+  thumbnailUrl,
+  isHovered 
+}: { 
+  src: string; 
+  alt: string; 
+  thumbnailUrl?: string | null;
+  isHovered: boolean;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [thumbnail, setThumbnail] = useState<string | null>(thumbnailUrl || null);
   const [error, setError] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
+  // Extract first frame for thumbnail if no thumbnailUrl provided
   useEffect(() => {
+    if (thumbnailUrl) return; // Skip if thumbnail already provided
+    
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
     if (!video || !canvas) return;
 
     const handleLoadedData = () => {
-      // Seek to first frame
       video.currentTime = 0.1;
+      setVideoLoaded(true);
     };
 
     const handleSeeked = () => {
+      if (thumbnail) return; // Only capture once
       try {
         const ctx = canvas.getContext('2d');
         if (ctx) {
@@ -104,7 +119,23 @@ function VideoThumbnail({ src, alt }: { src: string; alt: string }) {
       video.removeEventListener('seeked', handleSeeked);
       video.removeEventListener('error', handleError);
     };
-  }, [src]);
+  }, [src, thumbnailUrl, thumbnail]);
+
+  // Handle hover play/pause
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isHovered && videoLoaded) {
+      video.currentTime = 0;
+      video.play().catch(() => {
+        // Autoplay might be blocked, ignore error
+      });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }, [isHovered, videoLoaded]);
 
   if (error) {
     return (
@@ -119,24 +150,36 @@ function VideoThumbnail({ src, alt }: { src: string; alt: string }) {
       <video
         ref={videoRef}
         src={src}
-        className="hidden"
+        className={cn(
+          "w-full h-full object-cover transition-opacity duration-300",
+          isHovered && videoLoaded ? "opacity-100" : "opacity-0 absolute inset-0"
+        )}
         muted
         playsInline
-        crossOrigin="anonymous"
+        loop
         preload="metadata"
       />
       <canvas ref={canvasRef} className="hidden" />
-      {thumbnail ? (
-        <img
-          src={thumbnail}
-          alt={alt}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted animate-pulse">
-          <Play className="h-12 w-12" />
-        </div>
-      )}
+      
+      {/* Thumbnail overlay - hide when video is playing */}
+      <div 
+        className={cn(
+          "absolute inset-0 transition-opacity duration-300",
+          isHovered && videoLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}
+      >
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={alt}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted animate-pulse">
+            <Play className="h-12 w-12" />
+          </div>
+        )}
+      </div>
     </>
   );
 }
@@ -168,8 +211,22 @@ function AudioThumbnail() {
 }
 
 export function WorkCard({ work, className }: WorkCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
   // Determine what to show as thumbnail
   const renderThumbnail = () => {
+    // For video type - use VideoPreview with hover autoplay
+    if (work.type === 'video' && work.mediaUrl) {
+      return (
+        <VideoPreview 
+          src={work.mediaUrl} 
+          alt={work.title} 
+          thumbnailUrl={work.thumbnailUrl}
+          isHovered={isHovered}
+        />
+      );
+    }
+
     // 1. If thumbnailUrl is set, use it
     if (work.thumbnailUrl) {
       return (
@@ -194,9 +251,16 @@ export function WorkCard({ work, className }: WorkCardProps) {
         );
       }
 
-      // For video type or if mediaUrl is a video
-      if (work.type === 'video' || isVideoUrl(work.mediaUrl)) {
-        return <VideoThumbnail src={work.mediaUrl} alt={work.title} />;
+      // For video URL (non-video type)
+      if (isVideoUrl(work.mediaUrl)) {
+        return (
+          <VideoPreview 
+            src={work.mediaUrl} 
+            alt={work.title} 
+            thumbnailUrl={work.thumbnailUrl}
+            isHovered={isHovered}
+          />
+        );
       }
     }
 
@@ -223,30 +287,55 @@ export function WorkCard({ work, className }: WorkCardProps) {
           "hover:border-gold/30",
           className
         )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Thumbnail */}
         <div className="relative aspect-[4/3] bg-muted overflow-hidden">
           {renderThumbnail()}
           
           {/* Type badge */}
-          <div className="absolute top-3 left-3">
+          <div className="absolute top-3 left-3 z-10">
             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
               {typeIcons[work.type]}
               <span className="ml-1">{typeLabels[work.type]}</span>
             </Badge>
           </div>
           
-          {/* Play icon overlay for video */}
-          {work.type === 'video' && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="w-16 h-16 rounded-full bg-gold/80 flex items-center justify-center">
+          {/* Play icon overlay for video - only show when not hovering */}
+          {work.type === 'video' && !isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                 <Play className="h-8 w-8 text-white fill-white ml-1" />
               </div>
             </div>
           )}
           
-          {/* Overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Playing indicator for video */}
+          {work.type === 'video' && isHovered && (
+            <div className="absolute bottom-3 right-3 z-10">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm">
+                <div className="flex gap-0.5">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-0.5 bg-white rounded-full animate-pulse"
+                      style={{
+                        height: '12px',
+                        animationDelay: `${i * 0.15}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-white ml-1">再生中</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Overlay on hover - only for non-video */}
+          {work.type !== 'video' && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          )}
         </div>
 
         {/* Content */}
