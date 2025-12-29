@@ -435,3 +435,8 @@
 - [x] 背景にGaussian Blur効果を追加
 - [x] ease-outアニメーション（0.3s）を実装
 - [x] 動作確認（webdev_check_statusでサイト表示確認済み）
+
+
+## エラー修正
+- [x] /servicesページのAPIエラー確認（静的データ使用、キャッシュエラー）
+- [x] Vite WebSocketエラー修正（vite.config.tsにHMR設定追加）
