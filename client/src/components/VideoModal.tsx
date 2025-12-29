@@ -1,31 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Play, Pause, Volume2, VolumeX, Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-
-export interface VideoItem {
-  id: string;
-  videoUrl: string;
-  thumbnailUrl?: string;
-  title: string;
-  subtitle?: string;
-}
 
 interface VideoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentVideo: VideoItem;
-  allVideos?: VideoItem[];
-  onVideoChange?: (video: VideoItem) => void;
+  videoUrl: string;
+  title?: string;
 }
 
-export function VideoModal({ 
-  isOpen, 
-  onClose, 
-  currentVideo,
-  allVideos = [],
-  onVideoChange,
-}: VideoModalProps) {
+export function VideoModal({ isOpen, onClose, videoUrl, title }: VideoModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -35,23 +20,14 @@ export function VideoModal({
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
-  const [showRelatedVideos, setShowRelatedVideos] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get current index and navigation info
-  const currentIndex = allVideos.findIndex(v => v.id === currentVideo.id);
-  const hasPrevious = currentIndex > 0;
-  const hasNext = currentIndex < allVideos.length - 1;
-  const previousVideo = hasPrevious ? allVideos[currentIndex - 1] : null;
-  const nextVideo = hasNext ? allVideos[currentIndex + 1] : null;
-
-  // Reset state when video changes
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen && videoRef.current) {
       videoRef.current.currentTime = 0;
       setCurrentTime(0);
       setIsPlaying(false);
-      setShowRelatedVideos(false);
       // Auto-play when modal opens
       videoRef.current.play().then(() => {
         setIsPlaying(true);
@@ -59,7 +35,7 @@ export function VideoModal({
         // Autoplay might be blocked
       });
     }
-  }, [isOpen, currentVideo.videoUrl]);
+  }, [isOpen]);
 
   // Handle keyboard events
   useEffect(() => {
@@ -81,32 +57,21 @@ export function VideoModal({
           toggleFullscreen();
           break;
         case "ArrowLeft":
-          if (e.shiftKey && hasPrevious && previousVideo) {
-            // Shift + Left: Previous video
-            handleVideoChange(previousVideo);
-          } else if (videoRef.current) {
-            // Left: Seek back 10 seconds
+          if (videoRef.current) {
             videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 10);
           }
           break;
         case "ArrowRight":
-          if (e.shiftKey && hasNext && nextVideo) {
-            // Shift + Right: Next video
-            handleVideoChange(nextVideo);
-          } else if (videoRef.current) {
-            // Right: Seek forward 10 seconds
+          if (videoRef.current) {
             videoRef.current.currentTime = Math.min(duration, videoRef.current.currentTime + 10);
           }
-          break;
-        case "r":
-          setShowRelatedVideos(!showRelatedVideos);
           break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, duration, onClose, hasPrevious, hasNext, previousVideo, nextVideo, showRelatedVideos]);
+  }, [isOpen, duration, onClose]);
 
   // Auto-hide controls
   useEffect(() => {
@@ -118,7 +83,7 @@ export function VideoModal({
         clearTimeout(controlsTimeoutRef.current);
       }
       controlsTimeoutRef.current = setTimeout(() => {
-        if (isPlaying && !showRelatedVideos) {
+        if (isPlaying) {
           setShowControls(false);
         }
       }, 3000);
@@ -131,7 +96,7 @@ export function VideoModal({
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [isOpen, isPlaying, showRelatedVideos]);
+  }, [isOpen, isPlaying]);
 
   // Fullscreen change listener
   useEffect(() => {
@@ -142,13 +107,6 @@ export function VideoModal({
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
-
-  const handleVideoChange = (video: VideoItem) => {
-    if (onVideoChange) {
-      onVideoChange(video);
-    }
-    setShowRelatedVideos(false);
-  };
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -190,16 +148,6 @@ export function VideoModal({
     setCurrentTime(value[0]);
   };
 
-  const handleVideoEnded = () => {
-    setIsPlaying(false);
-    // Auto-play next video if available
-    if (hasNext && nextVideo) {
-      setTimeout(() => {
-        handleVideoChange(nextVideo);
-      }, 1500);
-    }
-  };
-
   const toggleFullscreen = async () => {
     if (!containerRef.current) return;
     
@@ -235,7 +183,7 @@ export function VideoModal({
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-4 right-4 z-20 text-white hover:bg-white/20 transition-opacity duration-300 ${
+          className={`absolute top-4 right-4 z-10 text-white hover:bg-white/20 transition-opacity duration-300 ${
             showControls ? "opacity-100" : "opacity-0"
           }`}
           onClick={onClose}
@@ -243,60 +191,27 @@ export function VideoModal({
           <X className="h-8 w-8" />
         </Button>
 
-        {/* Title and Video Counter */}
-        <div
-          className={`absolute top-4 left-4 z-20 transition-opacity duration-300 ${
-            showControls ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="text-white text-xl font-bold">
-            {currentVideo.title}
+        {/* Title */}
+        {title && (
+          <div
+            className={`absolute top-4 left-4 z-10 text-white text-xl font-bold transition-opacity duration-300 ${
+              showControls ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {title}
           </div>
-          {allVideos.length > 1 && (
-            <div className="text-white/60 text-sm mt-1">
-              {currentIndex + 1} / {allVideos.length}
-            </div>
-          )}
-        </div>
-
-        {/* Previous Video Button */}
-        {hasPrevious && previousVideo && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 text-white hover:bg-white/20 h-16 w-16 transition-opacity duration-300 ${
-              showControls ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={() => handleVideoChange(previousVideo)}
-          >
-            <ChevronLeft className="h-12 w-12" />
-          </Button>
-        )}
-
-        {/* Next Video Button */}
-        {hasNext && nextVideo && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 text-white hover:bg-white/20 h-16 w-16 transition-opacity duration-300 ${
-              showControls ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={() => handleVideoChange(nextVideo)}
-          >
-            <ChevronRight className="h-12 w-12" />
-          </Button>
         )}
 
         {/* Video Container */}
-        <div className="relative max-w-[90vw] max-h-[80vh] w-full h-full flex items-center justify-center">
+        <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
           <video
             ref={videoRef}
-            src={currentVideo.videoUrl}
+            src={videoUrl}
             className="max-w-full max-h-full object-contain cursor-pointer"
             onClick={togglePlay}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
-            onEnded={handleVideoEnded}
+            onEnded={() => setIsPlaying(false)}
             playsInline
           />
 
@@ -312,51 +227,6 @@ export function VideoModal({
             </div>
           )}
         </div>
-
-        {/* Related Videos Panel */}
-        {showRelatedVideos && allVideos.length > 1 && (
-          <div className="absolute bottom-32 left-0 right-0 z-20 px-6">
-            <div className="bg-black/80 backdrop-blur-sm rounded-xl p-4">
-              <h3 className="text-white text-sm font-medium mb-3">関連動画</h3>
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {allVideos.map((video, index) => (
-                  <button
-                    key={video.id}
-                    onClick={() => handleVideoChange(video)}
-                    className={`flex-shrink-0 group relative ${
-                      video.id === currentVideo.id ? "ring-2 ring-gold" : ""
-                    }`}
-                  >
-                    <div className="w-32 h-20 bg-gray-800 rounded-lg overflow-hidden">
-                      {video.thumbnailUrl ? (
-                        <img
-                          src={video.thumbnailUrl}
-                          alt={video.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/50">
-                          <Play className="h-6 w-6" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                      <Play className="h-8 w-8 text-white" fill="white" />
-                    </div>
-                    <div className="mt-1 text-xs text-white/80 truncate max-w-[128px]">
-                      {video.title}
-                    </div>
-                    {video.id === currentVideo.id && (
-                      <div className="absolute top-1 left-1 bg-gold text-black text-xs px-1.5 py-0.5 rounded">
-                        再生中
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Controls */}
         <div
@@ -379,19 +249,6 @@ export function VideoModal({
           {/* Control Buttons */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {/* Previous */}
-              {allVideos.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20 disabled:opacity-30"
-                  onClick={() => previousVideo && handleVideoChange(previousVideo)}
-                  disabled={!hasPrevious}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-              )}
-
               {/* Play/Pause */}
               <Button
                 variant="ghost"
@@ -405,19 +262,6 @@ export function VideoModal({
                   <Play className="h-6 w-6" />
                 )}
               </Button>
-
-              {/* Next */}
-              {allVideos.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20 disabled:opacity-30"
-                  onClick={() => nextVideo && handleVideoChange(nextVideo)}
-                  disabled={!hasNext}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </Button>
-              )}
 
               {/* Volume */}
               <div className="flex items-center gap-2">
@@ -451,43 +295,29 @@ export function VideoModal({
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Related Videos Toggle */}
-              {allVideos.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`text-white hover:bg-white/20 text-xs ${showRelatedVideos ? 'bg-white/20' : ''}`}
-                  onClick={() => setShowRelatedVideos(!showRelatedVideos)}
-                >
-                  関連動画
-                </Button>
+            {/* Fullscreen */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20"
+              onClick={toggleFullscreen}
+            >
+              {isFullscreen ? (
+                <Minimize className="h-6 w-6" />
+              ) : (
+                <Maximize className="h-6 w-6" />
               )}
-
-              {/* Fullscreen */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20"
-                onClick={toggleFullscreen}
-              >
-                {isFullscreen ? (
-                  <Minimize className="h-6 w-6" />
-                ) : (
-                  <Maximize className="h-6 w-6" />
-                )}
-              </Button>
-            </div>
+            </Button>
           </div>
         </div>
 
         {/* Keyboard Shortcuts Hint */}
         <div
-          className={`absolute ${showRelatedVideos ? 'bottom-56' : 'bottom-24'} left-1/2 -translate-x-1/2 text-white/50 text-xs transition-all duration-300 ${
+          className={`absolute bottom-24 left-1/2 -translate-x-1/2 text-white/50 text-xs transition-opacity duration-300 ${
             showControls ? "opacity-100" : "opacity-0"
           }`}
         >
-          スペース: 再生/停止 | M: ミュート | F: 全画面 | ←→: 10秒スキップ | Shift+←→: 前後の動画 | R: 関連動画 | Esc: 閉じる
+          スペース: 再生/一時停止 | M: ミュート | F: 全画面 | ←→: 10秒スキップ | Esc: 閉じる
         </div>
       </div>
     </div>

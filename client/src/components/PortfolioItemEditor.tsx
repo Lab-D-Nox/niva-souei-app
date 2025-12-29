@@ -36,7 +36,7 @@ import {
   generateThumbnailFromUrl,
   type ThumbnailGenerationProgress,
 } from "@/lib/thumbnailGenerator";
-import { VideoModal, type VideoItem } from "@/components/VideoModal";
+import { VideoModal } from "@/components/VideoModal";
 
 // Tier configuration
 const TIER_CONFIG = {
@@ -74,16 +74,9 @@ export function PortfolioItemDisplay({
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [currentVideoItem, setCurrentVideoItem] = useState<VideoItem | null>(null);
   
   const { data: item, isLoading } = trpc.portfolio.getByPosition.useQuery(
     { position },
-    { staleTime: 30000 }
-  );
-  
-  // Get all portfolio items for navigation
-  const { data: allItems } = trpc.portfolio.list.useQuery(
-    undefined,
     { staleTime: 30000 }
   );
   
@@ -95,35 +88,11 @@ export function PortfolioItemDisplay({
   
   const tierConfig = TIER_CONFIG[displayTier];
   
-  // Convert portfolio items to VideoItem format for the modal
-  const allVideos: VideoItem[] = (allItems || [])
-    .filter((p: { videoUrl?: string | null }) => p.videoUrl)
-    .map((p: { position: string; videoUrl?: string | null; thumbnailUrl?: string | null; title?: string | null; subtitle?: string | null }) => ({
-      id: p.position,
-      videoUrl: p.videoUrl!,
-      thumbnailUrl: p.thumbnailUrl || undefined,
-      title: p.title || 'タイトル未設定',
-      subtitle: p.subtitle || undefined,
-    }));
-  
   // Handle double click to open video modal
   const handleDoubleClick = () => {
-    if (videoUrl && item) {
-      const videoItem: VideoItem = {
-        id: position,
-        videoUrl: videoUrl,
-        thumbnailUrl: thumbnailUrl || undefined,
-        title: displayTitle || 'タイトル未設定',
-        subtitle: displaySubtitle || undefined,
-      };
-      setCurrentVideoItem(videoItem);
+    if (videoUrl) {
       setIsVideoModalOpen(true);
     }
-  };
-  
-  // Handle video change from modal navigation
-  const handleVideoChange = (video: VideoItem) => {
-    setCurrentVideoItem(video);
   };
   
   if (isLoading) {
@@ -208,13 +177,12 @@ export function PortfolioItemDisplay({
       </div>
       
       {/* Video Modal */}
-      {currentVideoItem && (
+      {videoUrl && (
         <VideoModal
           isOpen={isVideoModalOpen}
           onClose={() => setIsVideoModalOpen(false)}
-          currentVideo={currentVideoItem}
-          allVideos={allVideos}
-          onVideoChange={handleVideoChange}
+          videoUrl={videoUrl}
+          title={displayTitle}
         />
       )}
     </div>
