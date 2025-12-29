@@ -28,7 +28,13 @@ import {
   Music,
   FileText,
   Globe,
+  Wand2,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  generateThumbnail,
+  type ThumbnailGenerationProgress,
+} from "@/lib/thumbnailGenerator";
 
 const typeOptions = [
   { value: "image", label: "画像", icon: ImageIcon },
@@ -88,6 +94,13 @@ export default function WorkNew() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [suggestingTags, setSuggestingTags] = useState(false);
+  
+  // Thumbnail auto-generation state
+  const [autoThumbnail, setAutoThumbnail] = useState(true);
+  const [thumbnailProgress, setThumbnailProgress] = useState<ThumbnailGenerationProgress | null>(null);
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+  const [generatedThumbnailBlob, setGeneratedThumbnailBlob] = useState<Blob | null>(null);
+  const [generatedThumbnailPreview, setGeneratedThumbnailPreview] = useState<string | null>(null);
 
   const { data: tagsData } = trpc.tags.list.useQuery();
   const { data: toolsData } = trpc.tools.list.useQuery();
@@ -116,10 +129,40 @@ export default function WorkNew() {
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+      
+      // Auto-generate thumbnail for video if enabled
+      if (type === 'video' && autoThumbnail && selectedFile.type.startsWith('video/')) {
+        await generateThumbnailFromVideo(selectedFile);
+      }
+    }
+  };
+  
+  // Generate thumbnail from video file
+  const generateThumbnailFromVideo = async (videoFile: File) => {
+    setIsGeneratingThumbnail(true);
+    setThumbnailProgress(null);
+    
+    try {
+      const result = await generateThumbnail(videoFile, (progress) => {
+        setThumbnailProgress(progress);
+      });
+      
+      setGeneratedThumbnailBlob(result.blob);
+      setGeneratedThumbnailPreview(result.dataUrl);
+      // Clear manual thumbnail if auto-generated
+      setThumbnailFile(null);
+      
+      toast.success(`サムネイルを自動生成しました（${result.timestamp.toFixed(1)}秒時点）`);
+    } catch (error) {
+      console.error('Thumbnail generation error:', error);
+      toast.error('サムネイルの自動生成に失敗しました');
+    } finally {
+      setIsGeneratingThumbnail(false);
+      setThumbnailProgress(null);
     }
   };
 
@@ -127,6 +170,9 @@ export default function WorkNew() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setThumbnailFile(selectedFile);
+      // Clear auto-generated thumbnail when manually uploading
+      setGeneratedThumbnailBlob(null);
+      setGeneratedThumbnailPreview(null);
     }
   };
 
@@ -196,9 +242,28 @@ export default function WorkNew() {
         mediaUrl = await uploadFile(file);
       }
 
-      // Upload thumbnail
+      // Upload thumbnail (manual or auto-generated)
       if (thumbnailFile) {
         thumbnailUrl = await uploadFile(thumbnailFile);
+      } else if (generatedThumbnailBlob) {
+        // Upload auto-generated thumbnail
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            resolve(dataUrl.split(',')[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(generatedThumbnailBlob);
+        });
+        
+        const key = `works/${user?.id}/thumbnail-auto-${Date.now()}.jpg`;
+        const result = await uploadMutation.mutateAsync({
+          key,
+          data: base64,
+          contentType: 'image/jpeg',
+        });
+        thumbnailUrl = result.url;
       }
 
       // Create tags for custom tags
@@ -405,8 +470,79 @@ export default function WorkNew() {
 
             {/* Thumbnail */}
             <div>
-              <Label className="mb-2 block">サムネイル画像</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+              <div className="flex items-center justify-between mb-2">
+                <Label>サムネイル画像</Label>
+                {type === 'video' && (
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="auto-thumbnail" className="text-sm text-muted-foreground cursor-pointer">
+                      動画から自動生成
+                    </Label>
+                    <Switch
+                      id="auto-thumbnail"
+                      checked={autoThumbnail}
+                      onCheckedChange={(checked) => {
+                        setAutoThumbnail(checked);
+                        if (!checked) {
+                          // Clear auto-generated thumbnail when turning off
+                          setGeneratedThumbnailBlob(null);
+                          setGeneratedThumbnailPreview(null);
+                        } else if (file && file.type.startsWith('video/')) {
+                          // Re-generate if video is already selected
+                          generateThumbnailFromVideo(file);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {/* Thumbnail Generation Progress */}
+              {thumbnailProgress && (
+                <div className="space-y-2 p-3 bg-muted rounded-lg mb-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="flex items-center gap-2">
+                      <Wand2 className="h-4 w-4 animate-pulse" />
+                      {thumbnailProgress.message}
+                    </span>
+                    <span>{thumbnailProgress.progress}%</span>
+                  </div>
+                  <Progress value={thumbnailProgress.progress} />
+                </div>
+              )}
+              
+              {/* Show auto-generated thumbnail preview */}
+              {generatedThumbnailPreview && !thumbnailFile ? (
+                <div className="relative">
+                  <div className="border-2 border-primary/50 rounded-lg overflow-hidden">
+                    <img
+                      src={generatedThumbnailPreview}
+                      alt="自動生成サムネイル"
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute top-2 left-2 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
+                      <Wand2 className="h-3 w-3" />
+                      自動生成
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        setGeneratedThumbnailBlob(null);
+                        setGeneratedThumbnailPreview(null);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    手動でアップロードする場合は下のボタンをクリック
+                  </p>
+                </div>
+              ) : null}
+              
+              {/* Manual thumbnail upload */}
+              <div className={`border-2 border-dashed border-border rounded-lg p-4 text-center ${generatedThumbnailPreview && !thumbnailFile ? 'mt-3' : ''}`}>
                 {thumbnailFile ? (
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-sm">{thumbnailFile.name}</span>
@@ -427,7 +563,7 @@ export default function WorkNew() {
                       className="hidden"
                     />
                     <span className="text-sm text-muted-foreground">
-                      サムネイルを選択
+                      {autoThumbnail && type === 'video' ? '手動でサムネイルを選択（任意）' : 'サムネイルを選択'}
                     </span>
                   </label>
                 )}
