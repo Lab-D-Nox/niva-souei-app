@@ -36,7 +36,15 @@ import {
   ArrowLeft,
   Trash2,
   Save,
+  Wand2,
+  Image as ImageIcon,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  generateThumbnail,
+  generateThumbnailFromUrl,
+  type ThumbnailGenerationProgress,
+} from "@/lib/thumbnailGenerator";
 
 const originOptions = [
   { value: "personal", label: "個人作品" },
@@ -76,6 +84,13 @@ export default function WorkEdit() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [suggestingTags, setSuggestingTags] = useState(false);
+  
+  // Thumbnail state
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailProgress, setThumbnailProgress] = useState<ThumbnailGenerationProgress | null>(null);
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+  const [generatedThumbnailBlob, setGeneratedThumbnailBlob] = useState<Blob | null>(null);
+  const [generatedThumbnailPreview, setGeneratedThumbnailPreview] = useState<string | null>(null);
 
   const { data: work, isLoading: workLoading, error } = trpc.works.getById.useQuery(
     { id: workId },
@@ -173,6 +188,71 @@ export default function WorkEdit() {
     );
   };
 
+  // Upload mutation for thumbnail
+  const uploadMutation = trpc.upload.complete.useMutation();
+
+  // Handle thumbnail file change
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setThumbnailFile(selectedFile);
+      setGeneratedThumbnailBlob(null);
+      setGeneratedThumbnailPreview(null);
+    }
+  };
+
+  // Generate thumbnail from existing video URL
+  const handleGenerateThumbnailFromUrl = async () => {
+    if (!work?.mediaUrl) {
+      toast.error('動画がアップロードされていません');
+      return;
+    }
+
+    setIsGeneratingThumbnail(true);
+    setThumbnailProgress(null);
+
+    try {
+      const result = await generateThumbnailFromUrl(work.mediaUrl, (progress) => {
+        setThumbnailProgress(progress);
+      });
+
+      setGeneratedThumbnailBlob(result.blob);
+      setGeneratedThumbnailPreview(result.dataUrl);
+      setThumbnailFile(null);
+
+      toast.success(`サムネイルを自動生成しました（${result.timestamp.toFixed(1)}秒時点）`);
+    } catch (error) {
+      console.error('Thumbnail generation error:', error);
+      toast.error('サムネイルの自動生成に失敗しました');
+    } finally {
+      setIsGeneratingThumbnail(false);
+      setThumbnailProgress(null);
+    }
+  };
+
+  // Upload file helper
+  const uploadFile = async (file: File | Blob, filename: string): Promise<string> => {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = async () => {
+        try {
+          const base64 = (reader.result as string).split(',')[1];
+          const key = `works/${user?.id}/${Date.now()}-${filename}`;
+          const result = await uploadMutation.mutateAsync({
+            key,
+            data: base64,
+            contentType: file instanceof File ? file.type : 'image/jpeg',
+          });
+          resolve(result.url);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async () => {
     if (!title.trim()) {
       toast.error("タイトルを入力してください");
@@ -181,6 +261,14 @@ export default function WorkEdit() {
 
     setIsSubmitting(true);
     try {
+      // Upload new thumbnail if provided
+      let thumbnailUrl: string | undefined;
+      if (thumbnailFile) {
+        thumbnailUrl = await uploadFile(thumbnailFile, thumbnailFile.name);
+      } else if (generatedThumbnailBlob) {
+        thumbnailUrl = await uploadFile(generatedThumbnailBlob, `thumbnail-auto-${Date.now()}.jpg`);
+      }
+
       // Create custom tags first
       const newTagIds: number[] = [];
       for (const tagName of customTags) {
@@ -198,6 +286,7 @@ export default function WorkEdit() {
       const allTagIds = Array.from(new Set([...selectedTags, ...newTagIds]));
 
       await updateWorkMutation.mutateAsync({
+        ...(thumbnailUrl && { thumbnailUrl }),
         id: workId,
         title,
         description: description || undefined,
@@ -373,6 +462,127 @@ export default function WorkEdit() {
                 </div>
               </div>
             </div>
+
+            {/* Thumbnail Section - Only for video type */}
+            {work.type === 'video' && (
+              <div className="bg-card rounded-xl p-6 border border-border/50">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-medium">サムネイル</h2>
+                  {work.mediaUrl && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateThumbnailFromUrl}
+                      disabled={isGeneratingThumbnail}
+                    >
+                      {isGeneratingThumbnail ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Wand2 className="h-4 w-4 mr-2" />
+                      )}
+                      動画から自動生成
+                    </Button>
+                  )}
+                </div>
+
+                {/* Current thumbnail */}
+                {work.thumbnailUrl && !generatedThumbnailPreview && !thumbnailFile && (
+                  <div className="mb-4">
+                    <Label className="text-sm text-muted-foreground mb-2 block">現在のサムネイル</Label>
+                    <div className="relative w-48 h-32 rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={work.thumbnailUrl}
+                        alt="現在のサムネイル"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Thumbnail Generation Progress */}
+                {thumbnailProgress && (
+                  <div className="space-y-2 p-3 bg-muted rounded-lg mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2">
+                        <Wand2 className="h-4 w-4 animate-pulse" />
+                        {thumbnailProgress.message}
+                      </span>
+                      <span>{thumbnailProgress.progress}%</span>
+                    </div>
+                    <Progress value={thumbnailProgress.progress} />
+                  </div>
+                )}
+
+                {/* Auto-generated thumbnail preview */}
+                {generatedThumbnailPreview && !thumbnailFile && (
+                  <div className="mb-4">
+                    <Label className="text-sm text-muted-foreground mb-2 block">新しいサムネイル（自動生成）</Label>
+                    <div className="relative">
+                      <div className="relative w-48 h-32 rounded-lg overflow-hidden border-2 border-primary/50">
+                        <img
+                          src={generatedThumbnailPreview}
+                          alt="自動生成サムネイル"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-1 left-1 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                          <Wand2 className="h-3 w-3" />
+                          自動生成
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          setGeneratedThumbnailBlob(null);
+                          setGeneratedThumbnailPreview(null);
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        キャンセル
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Manual thumbnail upload */}
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">
+                    {generatedThumbnailPreview ? 'または手動でアップロード' : '新しいサムネイルをアップロード'}
+                  </Label>
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+                    {thumbnailFile ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{thumbnailFile.name}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setThumbnailFile(null)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleThumbnailChange}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col items-center gap-2">
+                          <Upload className="h-6 w-6 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            クリックしてファイルを選択
+                          </span>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Classification */}
             <div className="bg-card rounded-xl p-6 border border-border/50">
