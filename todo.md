@@ -440,3 +440,9 @@
 ## エラー修正
 - [x] /servicesページのAPIエラー確認（静的データ使用、キャッシュエラー）
 - [x] Vite WebSocketエラー修正（vite.config.tsにHMR設定追加）
+
+
+## GitHub公開
+- [ ] GitHubリポジトリの作成
+- [ ] .gitignoreの確認と機密情報の除外
+- [ ] リポジトリへのプッシュ
