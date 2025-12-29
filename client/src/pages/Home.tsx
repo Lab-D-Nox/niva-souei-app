@@ -34,12 +34,13 @@ function CausticsBackground() {
 }
 
 // Click ripple effect
+let rippleIdCounter = 0;
 function ClickRipple() {
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
 
   const handleClick = useCallback((e: MouseEvent) => {
     const newRipple = {
-      id: Date.now(),
+      id: ++rippleIdCounter,
       x: e.clientX,
       y: e.clientY,
     };
