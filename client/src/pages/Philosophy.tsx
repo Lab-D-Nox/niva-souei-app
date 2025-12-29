@@ -148,16 +148,16 @@ function ConceptDiagram() {
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
         {/* Sound to Center - Gold line */}
         <line 
-          x1="200" y1="80" x2="200" y2="160" 
+          x1="200" y1="90" x2="200" y2="165" 
           stroke="url(#goldGradient)" 
-          strokeWidth="3" 
+          strokeWidth="4" 
           strokeLinecap="round"
           className={`transition-all duration-700 ${
             isVisible ? 'opacity-100' : 'opacity-0'
           }`}
           style={{ 
-            strokeDasharray: '80',
-            strokeDashoffset: isVisible ? '0' : '80',
+            strokeDasharray: '75',
+            strokeDashoffset: isVisible ? '0' : '75',
             transitionDelay: '0.8s'
           }}
         />
