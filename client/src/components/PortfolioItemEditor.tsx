@@ -19,7 +19,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Pencil, Upload, X, Loader2, Wand2, ImageIcon } from "lucide-react";
+import { Pencil, Upload, X, Loader2, Wand2, ImageIcon, Play } from "lucide-react";
+import { VideoModal } from "@/components/VideoModal";
 import { toast } from "sonner";
 import {
   compressVideo,
@@ -72,6 +73,11 @@ export function PortfolioItemDisplay({
 }: PortfolioItemDisplayProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState<number | undefined>();
+  
+  // Fetch all portfolio items for navigation
+  const { data: allItems } = trpc.portfolio.list.useQuery(undefined, { staleTime: 30000 });
   
   const { data: item, isLoading } = trpc.portfolio.getByPosition.useQuery(
     { position },
@@ -96,8 +102,42 @@ export function PortfolioItemDisplay({
     );
   }
   
+  // Prepare video items for navigation
+  const videoItems = (allItems || []).filter(i => i.videoUrl).map(i => ({
+    id: i.id,
+    title: i.title,
+    videoUrl: i.videoUrl!,
+    thumbnailUrl: i.thumbnailUrl,
+  }));
+  
+  const handleDoubleClick = () => {
+    if (videoUrl && item) {
+      setCurrentVideoId(item.id);
+      setIsVideoModalOpen(true);
+    }
+  };
+  
+  const handleNavigate = (videoId: number) => {
+    setCurrentVideoId(videoId);
+  };
+  
+  const currentVideo = videoItems.find(v => v.id === currentVideoId);
+  
   return (
     <div className="relative group">
+      {/* Video Modal */}
+      {currentVideo && (
+        <VideoModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          videoUrl={currentVideo.videoUrl}
+          title={currentVideo.title}
+          allVideos={videoItems}
+          currentVideoId={currentVideoId}
+          onNavigate={handleNavigate}
+        />
+      )}
+      
       {/* Admin Edit Button */}
       {isAdmin && (
         <PortfolioItemEditor
@@ -109,17 +149,30 @@ export function PortfolioItemDisplay({
       )}
       
       {/* Card */}
-      <div className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div 
+        className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+        onDoubleClick={handleDoubleClick}
+        title={videoUrl ? "ダブルクリックで再生" : undefined}
+      >
         {/* Video or Thumbnail */}
         {videoUrl ? (
-          <video
-            src={videoUrl}
-            className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
+          <>
+            <video
+              src={videoUrl}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+            {/* Play hint on hover */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
+              <div className="p-3 rounded-full bg-white/20 backdrop-blur-sm">
+                <Play className="w-8 h-8 text-white" />
+              </div>
+              <span className="absolute bottom-20 text-white text-sm bg-black/50 px-3 py-1 rounded-full">ダブルクリックで再生</span>
+            </div>
+          </>
         ) : thumbnailUrl ? (
           <img
             src={thumbnailUrl}
