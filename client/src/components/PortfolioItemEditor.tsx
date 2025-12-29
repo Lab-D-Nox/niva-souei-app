@@ -19,7 +19,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Pencil, Upload, X, Loader2 } from "lucide-react";
+import { Pencil, Upload, X, Loader2, Wand2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   compressVideo,
@@ -31,6 +31,11 @@ import {
   getRecommendedQuality,
   estimateCompressedSize,
 } from "@/lib/videoCompressor";
+import {
+  generateThumbnail,
+  generateThumbnailFromUrl,
+  type ThumbnailGenerationProgress,
+} from "@/lib/thumbnailGenerator";
 
 // Tier configuration
 const TIER_CONFIG = {
@@ -179,6 +184,11 @@ export function PortfolioItemEditor({
   const [showQualitySelector, setShowQualitySelector] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   
+  // Thumbnail generation state
+  const [thumbnailProgress, setThumbnailProgress] = useState<ThumbnailGenerationProgress | null>(null);
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+  const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
+  
   // Refs for file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -288,6 +298,62 @@ export function PortfolioItemEditor({
       setIsUploading(false);
       setCompressionProgress(null);
       setUploadProgress(0);
+    }
+  };
+  
+  // Handle automatic thumbnail generation
+  const handleGenerateThumbnail = async () => {
+    if (!videoUrl && !pendingVideoFile) {
+      toast.error('先に動画をアップロードしてください');
+      return;
+    }
+    
+    setIsGeneratingThumbnail(true);
+    setThumbnailProgress(null);
+    
+    try {
+      let result;
+      
+      if (pendingVideoFile) {
+        // Generate from local file
+        result = await generateThumbnail(pendingVideoFile, (progress) => {
+          setThumbnailProgress(progress);
+        });
+      } else if (videoUrl) {
+        // Generate from uploaded video URL
+        result = await generateThumbnailFromUrl(videoUrl, (progress) => {
+          setThumbnailProgress(progress);
+        });
+      } else {
+        throw new Error('動画が見つかりません');
+      }
+      
+      // Upload the generated thumbnail
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => {
+          const dataUrl = reader.result as string;
+          resolve(dataUrl.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(result.blob);
+      });
+      
+      const key = `portfolio/${position}/thumbnail-auto-${Date.now()}.jpg`;
+      const { url } = await uploadMutation.mutateAsync({
+        key,
+        data: base64,
+        contentType: 'image/jpeg',
+      });
+      
+      setThumbnailUrl(url);
+      toast.success(`サムネイルを自動生成しました（${result.timestamp.toFixed(1)}秒時点のフレーム）`);
+    } catch (error) {
+      console.error('Thumbnail generation error:', error);
+      toast.error('サムネイルの生成に失敗しました');
+    } finally {
+      setIsGeneratingThumbnail(false);
+      setThumbnailProgress(null);
     }
   };
   
@@ -482,6 +548,9 @@ export function PortfolioItemEditor({
           {/* Thumbnail Upload */}
           <div className="space-y-2">
             <Label>サムネイル</Label>
+            <p className="text-xs text-muted-foreground">
+              動画から自動生成するか、手動でアップロードできます
+            </p>
             <input
               ref={thumbnailInputRef}
               type="file"
@@ -492,6 +561,17 @@ export function PortfolioItemEditor({
                 if (file) handleFileUpload(file, "thumbnail");
               }}
             />
+            
+            {/* Thumbnail Generation Progress */}
+            {thumbnailProgress && (
+              <div className="space-y-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between text-sm">
+                  <span>{thumbnailProgress.message}</span>
+                  <span>{thumbnailProgress.progress}%</span>
+                </div>
+                <Progress value={thumbnailProgress.progress} />
+              </div>
+            )}
             
             {thumbnailUrl ? (
               <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
@@ -510,21 +590,47 @@ export function PortfolioItemEditor({
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="outline"
-                className="w-full h-24 border-dashed"
-                onClick={() => thumbnailInputRef.current?.click()}
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <>
-                    <Upload className="h-6 w-6 mr-2" />
-                    サムネイルをアップロード
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                {/* Auto-generate button */}
+                <Button
+                  variant="default"
+                  className="flex-1 h-24"
+                  onClick={handleGenerateThumbnail}
+                  disabled={isUploading || isGeneratingThumbnail || !videoUrl}
+                >
+                  {isGeneratingThumbnail ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <>
+                      <Wand2 className="h-6 w-6 mr-2" />
+                      <span className="flex flex-col items-start">
+                        <span>自動生成</span>
+                        <span className="text-xs opacity-70">最適なフレームを抽出</span>
+                      </span>
+                    </>
+                  )}
+                </Button>
+                
+                {/* Manual upload button */}
+                <Button
+                  variant="outline"
+                  className="flex-1 h-24 border-dashed"
+                  onClick={() => thumbnailInputRef.current?.click()}
+                  disabled={isUploading || isGeneratingThumbnail}
+                >
+                  {isUploading ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <>
+                      <ImageIcon className="h-6 w-6 mr-2" />
+                      <span className="flex flex-col items-start">
+                        <span>手動アップロード</span>
+                        <span className="text-xs opacity-70">画像を選択</span>
+                      </span>
+                    </>
+                  )}
+                </Button>
+              </div>
             )}
           </div>
           
