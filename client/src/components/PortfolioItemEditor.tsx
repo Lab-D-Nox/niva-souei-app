@@ -36,7 +36,6 @@ import {
   generateThumbnailFromUrl,
   type ThumbnailGenerationProgress,
 } from "@/lib/thumbnailGenerator";
-import { VideoModal } from "@/components/VideoModal";
 
 // Tier configuration
 const TIER_CONFIG = {
@@ -73,7 +72,6 @@ export function PortfolioItemDisplay({
 }: PortfolioItemDisplayProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   
   const { data: item, isLoading } = trpc.portfolio.getByPosition.useQuery(
     { position },
@@ -87,13 +85,6 @@ export function PortfolioItemDisplay({
   const thumbnailUrl = item?.thumbnailUrl;
   
   const tierConfig = TIER_CONFIG[displayTier];
-  
-  // Handle double click to open video modal
-  const handleDoubleClick = () => {
-    if (videoUrl) {
-      setIsVideoModalOpen(true);
-    }
-  };
   
   if (isLoading) {
     return (
@@ -118,11 +109,7 @@ export function PortfolioItemDisplay({
       )}
       
       {/* Card */}
-      <div 
-        className={`relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${videoUrl ? 'cursor-pointer' : ''}`}
-        onDoubleClick={handleDoubleClick}
-        title={videoUrl ? 'ダブルクリックで動画を再生' : ''}
-      >
+      <div className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
         {/* Video or Thumbnail */}
         {videoUrl ? (
           <video
@@ -166,25 +153,8 @@ export function PortfolioItemDisplay({
               {displaySubtitle}
             </p>
           )}
-          
-          {/* Double-click hint */}
-          {videoUrl && (
-            <div className="mt-2 text-xs text-white/50 opacity-0 group-hover:opacity-100 transition-opacity">
-              ダブルクリックで再生
-            </div>
-          )}
         </div>
       </div>
-      
-      {/* Video Modal */}
-      {videoUrl && (
-        <VideoModal
-          isOpen={isVideoModalOpen}
-          onClose={() => setIsVideoModalOpen(false)}
-          videoUrl={videoUrl}
-          title={displayTitle}
-        />
-      )}
     </div>
   );
 }
