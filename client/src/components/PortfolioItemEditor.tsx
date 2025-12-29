@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -17,10 +16,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Pencil, Upload, X, Play, Loader2 } from "lucide-react";
+import { Pencil, Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  compressVideo,
+  needsCompression,
+  formatFileSize,
+  type CompressionProgress,
+} from "@/lib/videoCompressor";
 
 // Tier configuration
 const TIER_CONFIG = {
@@ -34,22 +40,114 @@ const TIER_CONFIG = {
 type TierKey = keyof typeof TIER_CONFIG;
 type Position = "left" | "center" | "right";
 
-interface PortfolioItem {
-  id?: number;
-  position: Position;
-  tier: TierKey;
-  title: string;
-  subtitle?: string | null;
-  description?: string | null;
-  videoUrl?: string | null;
-  thumbnailUrl?: string | null;
-}
-
 interface PortfolioItemEditorProps {
   position: Position;
   defaultTier?: TierKey;
   defaultTitle?: string;
   defaultSubtitle?: string;
+}
+
+// Portfolio Item Display Component
+interface PortfolioItemDisplayProps {
+  position: Position;
+  defaultTier?: TierKey;
+  defaultTitle?: string;
+  defaultSubtitle?: string;
+}
+
+export function PortfolioItemDisplay({
+  position,
+  defaultTier = "tier1",
+  defaultTitle = "",
+  defaultSubtitle = "",
+}: PortfolioItemDisplayProps) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  
+  const { data: item, isLoading } = trpc.portfolio.getByPosition.useQuery(
+    { position },
+    { staleTime: 30000 }
+  );
+  
+  const displayTier = item?.tier as TierKey || defaultTier;
+  const displayTitle = item?.title || defaultTitle;
+  const displaySubtitle = item?.subtitle || defaultSubtitle;
+  const videoUrl = item?.videoUrl;
+  const thumbnailUrl = item?.thumbnailUrl;
+  
+  const tierConfig = TIER_CONFIG[displayTier];
+  
+  if (isLoading) {
+    return (
+      <div className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="relative group">
+      {/* Admin Edit Button */}
+      {isAdmin && (
+        <PortfolioItemEditor
+          position={position}
+          defaultTier={defaultTier}
+          defaultTitle={defaultTitle}
+          defaultSubtitle={defaultSubtitle}
+        />
+      )}
+      
+      {/* Card */}
+      <div className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+        {/* Video or Thumbnail */}
+        {videoUrl ? (
+          <video
+            src={videoUrl}
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt={displayTitle}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+            <span className="text-sm">動画未設定</span>
+          </div>
+        )}
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+          {/* Tier Badge */}
+          <div className={`${tierConfig.color} inline-block px-3 py-1 rounded-full text-xs font-medium mb-3`}>
+            Tier {displayTier.slice(-1)}: {tierConfig.name}
+          </div>
+          
+          {/* Title */}
+          <h3 className="text-xl font-bold mb-1 line-clamp-2">
+            {displayTitle || "タイトル未設定"}
+          </h3>
+          
+          {/* Subtitle */}
+          {displaySubtitle && (
+            <p className="text-sm text-white/80 line-clamp-2">
+              {displaySubtitle}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function PortfolioItemEditor({
@@ -69,6 +167,10 @@ export function PortfolioItemEditor({
   const [videoUrl, setVideoUrl] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Compression state
+  const [compressionProgress, setCompressionProgress] = useState<CompressionProgress | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   // Refs for file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -112,10 +214,38 @@ export function PortfolioItemEditor({
     }
   }, [existingItem, defaultTier, defaultTitle, defaultSubtitle]);
   
-  // Handle file upload
+  // Handle file upload with compression support
   const handleFileUpload = async (file: File, type: "video" | "thumbnail") => {
     setIsUploading(true);
+    setCompressionProgress(null);
+    setUploadProgress(0);
+    
     try {
+      let fileToUpload: File | Blob = file;
+      let contentType = file.type;
+      let fileName = file.name;
+      
+      // Check if video needs compression
+      if (type === "video" && needsCompression(file)) {
+        toast.info(`大きなファイル (${formatFileSize(file.size)}) を圧縮しています...`);
+        
+        const result = await compressVideo(file, (progress) => {
+          setCompressionProgress(progress);
+        });
+        
+        fileToUpload = result.blob;
+        contentType = "video/webm";
+        fileName = file.name.replace(/\.[^.]+$/, ".webm");
+        
+        toast.success(
+          `圧縮完了: ${formatFileSize(result.originalSize)} → ${formatFileSize(result.compressedSize)}`
+        );
+      }
+      
+      setCompressionProgress(null);
+      setUploadProgress(10);
+      
+      // Convert to base64
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
         reader.onload = () => {
@@ -123,15 +253,19 @@ export function PortfolioItemEditor({
           resolve(result.split(",")[1]); // Remove data URL prefix
         };
         reader.onerror = reject;
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileToUpload);
       });
       
-      const key = `portfolio/${position}/${type}-${Date.now()}.${file.name.split(".").pop()}`;
+      setUploadProgress(50);
+      
+      const key = `portfolio/${position}/${type}-${Date.now()}.${fileName.split(".").pop()}`;
       const { url } = await uploadMutation.mutateAsync({
         key,
         data: base64,
-        contentType: file.type,
+        contentType,
       });
+      
+      setUploadProgress(100);
       
       if (type === "video") {
         setVideoUrl(url);
@@ -141,9 +275,12 @@ export function PortfolioItemEditor({
       
       toast.success(`${type === "video" ? "動画" : "サムネイル"}をアップロードしました`);
     } catch (error) {
+      console.error("Upload error:", error);
       toast.error("アップロードに失敗しました");
     } finally {
       setIsUploading(false);
+      setCompressionProgress(null);
+      setUploadProgress(0);
     }
   };
   
@@ -233,6 +370,9 @@ export function PortfolioItemEditor({
           {/* Video Upload */}
           <div className="space-y-2">
             <Label>動画</Label>
+            <p className="text-xs text-muted-foreground">
+              大きなファイル（500MB以上）は自動的に圧縮されます。1GB以上のファイルもアップロード可能です。
+            </p>
             <input
               ref={videoInputRef}
               type="file"
@@ -243,6 +383,28 @@ export function PortfolioItemEditor({
                 if (file) handleFileUpload(file, "video");
               }}
             />
+            
+            {/* Compression Progress */}
+            {compressionProgress && (
+              <div className="space-y-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between text-sm">
+                  <span>{compressionProgress.message}</span>
+                  <span>{compressionProgress.progress}%</span>
+                </div>
+                <Progress value={compressionProgress.progress} />
+              </div>
+            )}
+            
+            {/* Upload Progress */}
+            {isUploading && !compressionProgress && uploadProgress > 0 && (
+              <div className="space-y-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between text-sm">
+                  <span>アップロード中...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} />
+              </div>
+            )}
             
             {videoUrl ? (
               <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
@@ -342,132 +504,5 @@ export function PortfolioItemEditor({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-// Portfolio Item Display Component
-interface PortfolioItemDisplayProps {
-  position: Position;
-  defaultTier: TierKey;
-  defaultTitle: string;
-  defaultSubtitle: string;
-}
-
-export function PortfolioItemDisplay({
-  position,
-  defaultTier,
-  defaultTitle,
-  defaultSubtitle,
-}: PortfolioItemDisplayProps) {
-  const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
-  const [isHovering, setIsHovering] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
-  // Fetch portfolio item
-  const { data: item } = trpc.portfolio.getByPosition.useQuery({ position });
-  
-  // Use fetched data or defaults
-  const tier = (item?.tier as TierKey) || defaultTier;
-  const title = item?.title || defaultTitle;
-  const subtitle = item?.subtitle || defaultSubtitle;
-  const videoUrl = item?.videoUrl;
-  const thumbnailUrl = item?.thumbnailUrl;
-  
-  const tierConfig = TIER_CONFIG[tier];
-  
-  // Handle video preview on hover
-  useEffect(() => {
-    if (videoRef.current && videoUrl) {
-      if (isHovering) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    }
-  }, [isHovering, videoUrl]);
-  
-  return (
-    <div 
-      className="glass-card p-6 hover-lift relative"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      {/* Admin Edit Button */}
-      {isAdmin && (
-        <PortfolioItemEditor
-          position={position}
-          defaultTier={defaultTier}
-          defaultTitle={defaultTitle}
-          defaultSubtitle={defaultSubtitle}
-        />
-      )}
-      
-      {/* Tier Badge */}
-      <div className={`${tierConfig.color} inline-block px-3 py-1 rounded-full text-xs font-medium mb-4`}>
-        Tier {tier.slice(-1)}: {tierConfig.name}（{tierConfig.label}）
-      </div>
-      
-      {/* Title */}
-      <h3 className="text-xl font-serif text-[#2B3A42] mb-2">{title}</h3>
-      
-      {/* Subtitle */}
-      <p className="text-sm text-[#5A6B75] mb-4">{subtitle}</p>
-      
-      {/* Media Display */}
-      <div className="aspect-video bg-[#2B3A42]/5 rounded-lg flex items-center justify-center overflow-hidden relative">
-        {videoUrl ? (
-          <>
-            {/* Video */}
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                isHovering ? "opacity-100" : "opacity-0"
-              }`}
-              muted
-              loop
-              playsInline
-            />
-            
-            {/* Thumbnail or First Frame */}
-            {thumbnailUrl ? (
-              <img
-                src={thumbnailUrl}
-                alt={title}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                  isHovering ? "opacity-0" : "opacity-100"
-                }`}
-              />
-            ) : (
-              <video
-                src={videoUrl}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                  isHovering ? "opacity-0" : "opacity-100"
-                }`}
-              />
-            )}
-            
-            {/* Play indicator */}
-            {!isHovering && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                  <Play className="h-5 w-5 text-[#2B3A42] ml-1" />
-                </div>
-              </div>
-            )}
-          </>
-        ) : thumbnailUrl ? (
-          <img
-            src={thumbnailUrl}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-[#5A6B75] text-sm">Coming Soon</span>
-        )}
-      </div>
-    </div>
   );
 }

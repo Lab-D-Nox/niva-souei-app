@@ -28,13 +28,35 @@ export function registerOAuthRoutes(app: Express) {
         return;
       }
 
-      await db.upsertUser({
-        openId: userInfo.openId,
-        name: userInfo.name || null,
-        email: userInfo.email ?? null,
-        loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-        lastSignedIn: new Date(),
-      });
+      // Retry logic for database operations (handles temporary "no available peers" errors)
+      const maxRetries = 3;
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          await db.upsertUser({
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+            lastSignedIn: new Date(),
+          });
+          lastError = null;
+          break;
+        } catch (dbError) {
+          lastError = dbError as Error;
+          console.warn(`[OAuth] Database upsert attempt ${attempt}/${maxRetries} failed:`, (dbError as Error).message);
+          if (attempt < maxRetries) {
+            // Wait before retry (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+          }
+        }
+      }
+      
+      if (lastError) {
+        console.error("[OAuth] All database upsert attempts failed, proceeding without DB update", lastError);
+        // Continue with login even if DB update fails - user can still authenticate
+        // The user record will be created/updated on next successful DB operation
+      }
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId, {
         name: userInfo.name || "",

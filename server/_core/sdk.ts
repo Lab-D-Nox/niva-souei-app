@@ -268,20 +268,55 @@ class SDKServer {
 
     const sessionUserId = session.openId;
     const signedInAt = new Date();
-    let user = await db.getUserByOpenId(sessionUserId);
+    
+    // Try to get user from database
+    let user: User | undefined;
+    try {
+      user = await db.getUserByOpenId(sessionUserId);
+    } catch (dbError) {
+      console.warn("[Auth] Database error when fetching user:", dbError);
+      // Continue without DB user - will use session data
+    }
 
-    // If user not in DB, sync from OAuth server automatically
+    // If user not in DB, try to sync from OAuth server
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
+        
+        // Try to upsert user, but don't fail if DB is unavailable
+        try {
+          await db.upsertUser({
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+            lastSignedIn: signedInAt,
+          });
+          user = await db.getUserByOpenId(userInfo.openId);
+        } catch (upsertError) {
+          console.warn("[Auth] Database upsert failed, using OAuth data:", upsertError);
+        }
+        
+        // If DB operations failed, create a temporary user object from OAuth data
+        if (!user) {
+          // Return a minimal user object based on OAuth info
+          // This allows the app to function even when DB is down
+          const tempUser: User = {
+            id: 0, // Temporary ID
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            avatar: null,
+            bio: null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+            role: userInfo.openId === ENV.ownerOpenId ? 'admin' : 'user',
+            createdAt: signedInAt,
+            updatedAt: signedInAt,
+            lastSignedIn: signedInAt,
+          };
+          console.log("[Auth] Using temporary user from OAuth data:", tempUser.openId);
+          return tempUser;
+        }
       } catch (error) {
         console.error("[Auth] Failed to sync user from OAuth:", error);
         throw ForbiddenError("Failed to sync user info");
@@ -292,10 +327,15 @@ class SDKServer {
       throw ForbiddenError("User not found");
     }
 
-    await db.upsertUser({
-      openId: user.openId,
-      lastSignedIn: signedInAt,
-    });
+    // Try to update lastSignedIn, but don't fail if DB is unavailable
+    try {
+      await db.upsertUser({
+        openId: user.openId,
+        lastSignedIn: signedInAt,
+      });
+    } catch (updateError) {
+      console.warn("[Auth] Failed to update lastSignedIn:", updateError);
+    }
 
     return user;
   }
