@@ -19,7 +19,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Pencil, Upload, X, Loader2, Wand2, ImageIcon, Play } from "lucide-react";
+import { Pencil, Upload, X, Loader2, Wand2, ImageIcon, Play, Maximize2 } from "lucide-react";
 import { VideoModal } from "@/components/VideoModal";
 import { toast } from "sonner";
 import {
@@ -123,8 +123,15 @@ export function PortfolioItemDisplay({
   
   const currentVideo = videoItems.find(v => v.id === currentVideoId);
   
+  const handleExpandClick = () => {
+    if (videoUrl && item) {
+      setCurrentVideoId(item.id);
+      setIsVideoModalOpen(true);
+    }
+  };
+  
   return (
-    <div className="relative group">
+    <div className="relative group flex flex-col">
       {/* Video Modal */}
       {currentVideo && (
         <VideoModal
@@ -208,6 +215,17 @@ export function PortfolioItemDisplay({
           )}
         </div>
       </div>
+      
+      {/* Expand Button - Below Card */}
+      {videoUrl && (
+        <button
+          onClick={handleExpandClick}
+          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border border-gold/50 hover:border-gold hover:bg-gold/10 text-gold rounded-xl shadow-sm hover:shadow-gold/20 hover:shadow-lg transition-all duration-300 ease-out font-medium group"
+        >
+          <Maximize2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+          <span>拡大して再生</span>
+        </button>
+      )}
     </div>
   );
 }
