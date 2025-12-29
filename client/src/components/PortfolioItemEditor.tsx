@@ -26,6 +26,10 @@ import {
   needsCompression,
   formatFileSize,
   type CompressionProgress,
+  type QualityPreset,
+  QUALITY_PRESETS,
+  getRecommendedQuality,
+  estimateCompressedSize,
 } from "@/lib/videoCompressor";
 
 // Tier configuration
@@ -171,6 +175,9 @@ export function PortfolioItemEditor({
   // Compression state
   const [compressionProgress, setCompressionProgress] = useState<CompressionProgress | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [compressionQuality, setCompressionQuality] = useState<QualityPreset>('balanced');
+  const [showQualitySelector, setShowQualitySelector] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   
   // Refs for file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -227,11 +234,11 @@ export function PortfolioItemEditor({
       
       // Check if video needs compression
       if (type === "video" && needsCompression(file)) {
-        toast.info(`大きなファイル (${formatFileSize(file.size)}) を圧縮しています...`);
+        toast.info(`大きなファイル (${formatFileSize(file.size)}) を${QUALITY_PRESETS[compressionQuality].name}モードで圧縮しています...`);
         
         const result = await compressVideo(file, (progress) => {
           setCompressionProgress(progress);
-        });
+        }, compressionQuality);
         
         fileToUpload = result.blob;
         contentType = "video/webm";
@@ -373,6 +380,37 @@ export function PortfolioItemEditor({
             <p className="text-xs text-muted-foreground">
               大きなファイル（500MB以上）は自動的に圧縮されます。1GB以上のファイルもアップロード可能です。
             </p>
+            
+            {/* Quality Selection */}
+            <div className="space-y-2">
+              <Label className="text-sm">圧縮品質</Label>
+              <Select value={compressionQuality} onValueChange={(v) => setCompressionQuality(v as QualityPreset)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">🌟 高画質</span>
+                      <span className="text-xs text-muted-foreground">最高品質。ポートフォリオに最適</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="balanced">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">⚖️ バランス（推奨）</span>
+                      <span className="text-xs text-muted-foreground">品質とサイズのバランスが良い</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="compact">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">📦 軽量</span>
+                      <span className="text-xs text-muted-foreground">ファイルサイズ優先。素早いアップロードに</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
             <input
               ref={videoInputRef}
               type="file"
